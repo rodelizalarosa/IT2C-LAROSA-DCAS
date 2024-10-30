@@ -44,6 +44,9 @@ public class PatientInfo {
                         PatientInfo delete = new PatientInfo();
                         delete.deletePatient();
                         break;
+                    case 5:
+                        System.out.println("Exiting...");
+                        return;
                 }
     }
     
@@ -64,18 +67,20 @@ public class PatientInfo {
         String contnum = sc.next();
         System.out.print("Patient Email: ");
         String email = sc.next();
+        System.out.print("Patient Address: ");
+        String address = sc.next();
 
-        String sql = "INSERT INTO patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTACTNUM, pEMAIL) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTACTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        conf.addRecords(sql, fname, lname, age, gender, contnum, email);
+        conf.addRecords(sql, fname, lname, age, gender, contnum, email, address);
     }
     
     private void viewPatient() {
         Config cnf = new Config();
         
-        String rodeQuery = "SELECT * FROM patients";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender", "Contact Number", "Email"};
-        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTACTNUM", "pEMAIL"};
+        String rodeQuery = "SELECT * FROM tbl_patients";
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender", "Contact Number", "Email", "Address"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTACTNUM", "pEMAIL", "pADDRESS"};
 
         cnf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -103,7 +108,7 @@ public class PatientInfo {
         System.out.print("Enter new Email: ");
         String updemail = sc.next();
         
-        String update = "UPDATE patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pEMAIL = ?  WHERE pID = ?";
+        String update = "UPDATE tbl_patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pEMAIL = ?  WHERE pID = ?";
         
         Config cnf = new Config();
         cnf.updateRecords(update, updfname, updlname, updage, updgen, updemail, id);
@@ -115,7 +120,7 @@ public class PatientInfo {
         System.out.print("Enter Patient ID to delete: ");
         int id = sc.nextInt();
         
-        String delete = "DELETE FROM patients WHERE pID = ?";
+        String delete = "DELETE FROM tbl_patients WHERE pID = ?";
         
         Config cnf = new Config();
         cnf.deleteRecords(delete, id);
