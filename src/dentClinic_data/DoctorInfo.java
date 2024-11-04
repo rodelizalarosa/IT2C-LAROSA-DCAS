@@ -9,7 +9,9 @@ public class DoctorInfo {
     public static void manageDoctors() {
         Scanner sc = new Scanner(System.in);
         int opt;
+        String response;
         
+        do { 
         System.out.println("MANAGE DOCTOR INFORMATION");
         System.out.println("-----------------------------------");
         System.out.println("|    1. REGISTER A DOCTOR        |");
@@ -48,6 +50,12 @@ public class DoctorInfo {
                 System.out.println("Exiting...");
                 return;
         }
+        
+        System.out.print("\nDo you want to continue? (yes/no): ");
+          response = sc.next();
+                
+        } while(response.equalsIgnoreCase("yes"));
+        System.out.println("\n\tThank you, See you! ");
     }
     
     public void addDoctor() {

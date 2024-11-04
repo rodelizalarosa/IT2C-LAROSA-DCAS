@@ -6,11 +6,13 @@ import java.util.Scanner;
 
 public class StaffInfo {
     
-    public static void Staffs (){
+    public static void manageStaffs (){
         
         Scanner sc = new Scanner (System.in);
         int opt;
+        String response;
         
+        do {
         System.out.println("MANAGE STAFF INFORMATION");
         System.out.println("-----------------------------------");
         System.out.println("|    1. REGISTER A STAFF          |");
@@ -48,7 +50,14 @@ public class StaffInfo {
             case 5:
                 System.out.println("Exiting...");
                 return;
-        } 
+        }
+          System.out.print("\nDo you want to continue? (yes/no): ");
+          response = sc.next();
+                
+        } while(response.equalsIgnoreCase("yes"));
+        System.out.println("\n\tThank you, See you! ");
+  
+        
     }
 
    public void addStaff() {

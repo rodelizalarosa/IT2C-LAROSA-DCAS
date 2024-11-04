@@ -7,10 +7,12 @@ import java.util.Scanner;
 
 public class PatientInfo {
     
-    public static void Patients(){
+    public static void managePatients(){
         Scanner sc = new Scanner (System.in);
         int opt;
+        String response;
         
+        do {
                 System.out.println("MANAGE PATIENT INFORMATION");
                 System.out.println("-----------------------------------");
                 System.out.println("|    1. REGISTER A PATIENT        |");
@@ -48,6 +50,12 @@ public class PatientInfo {
                         System.out.println("Exiting...");
                         return;
                 }
+                
+            System.out.print("\nDo you want to continue? (yes/no): ");
+            response = sc.next();
+                
+            } while(response.equalsIgnoreCase("yes"));
+            System.out.println("\n\tThank you, See you! ");
     }
     
     public void addPatients(){
@@ -108,10 +116,13 @@ public class PatientInfo {
         System.out.print("Enter new Email: ");
         String updemail = sc.next();
         
-        String update = "UPDATE tbl_patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pEMAIL = ?  WHERE pID = ?";
+        System.out.print("Enter new Address");
+        String upadd = sc.next();
+        
+        String update = "UPDATE tbl_patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pEMAIL = ?, pADDRESS = ?  WHERE pID = ?";
         
         Config cnf = new Config();
-        cnf.updateRecords(update, updfname, updlname, updage, updgen, updemail, id);
+        cnf.updateRecords(update, updfname, updlname, updage, updgen, updemail, upadd,  id);
     }
     
     private void deletePatient(){
