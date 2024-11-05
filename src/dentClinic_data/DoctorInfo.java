@@ -6,61 +6,59 @@ import java.util.Scanner;
 
 public class DoctorInfo {
     
+        Config conf = new Config();
     public static void manageDoctors() {
         Scanner sc = new Scanner(System.in);
-        int opt;
-        String response;
+        boolean response = true;
         
         do { 
-        System.out.println("MANAGE DOCTOR INFORMATION");
-        System.out.println("-----------------------------------");
-        System.out.println("|    1. REGISTER A DOCTOR        |");
-        System.out.println("|    2. VIEW DOCTOR RECORD       |");
-        System.out.println("|    3. EDIT DOCTOR RECORD       |");
-        System.out.println("|    4. DELETE DOCTOR RECORD     |");
-        System.out.println("|    5. EXIT                     |");
-        System.out.println("-----------------------------------");
+            System.out.print("\n");
+            System.out.println("MANAGE DOCTOR INFORMATION");
+            System.out.println("-----------------------------------");
+            System.out.println("      1. REGISTER A DOCTOR         ");
+            System.out.println("      2. VIEW DOCTOR RECORD        ");
+            System.out.println("      3. EDIT DOCTOR RECORD        ");
+            System.out.println("      4. DELETE DOCTOR RECORD      ");
+            System.out.println("      5. EXIT                      ");
+            System.out.println("-----------------------------------");
+
+            System.out.print("\nEnter Option: ");
+            int opt = sc.nextInt();
+
+            while (opt < 1 || opt > 5) {
+                System.out.print("\tInvalid Input, Try Again: ");
+                opt = sc.nextInt();
+            }
         
-        System.out.print("\nEnter Option: ");
-        opt = sc.nextInt();
-        
-        while (opt < 1 || opt > 5) {
-            System.out.print("\tInvalid Input, Try Again: ");
-            opt = sc.nextInt();
-        }
-        
+                DoctorInfo dINFO = new DoctorInfo();
         switch (opt) {
-            case 1:
-                DoctorInfo add = new DoctorInfo();
-                add.addDoctor();
+            case 1:          
+                dINFO.addDoctor();
                 break;
             case 2: 
-                DoctorInfo view = new DoctorInfo();
-                view.viewDoctors();
+                dINFO.viewDoctors();
                 break;
             case 3:
-                DoctorInfo update = new DoctorInfo();
-                update.updateDoctor();
+                dINFO.viewDoctors();
+                dINFO.updateDoctor();
                 break;
             case 4:
-                DoctorInfo delete = new DoctorInfo();
-                delete.deleteDoctor();
+                dINFO.viewDoctors();
+                dINFO.deleteDoctor();
+                dINFO.viewDoctors();
                 break;
             case 5:
+                response = false;
                 System.out.println("Exiting...");
-                return;
+                break;
         }
-        
-        System.out.print("\nDo you want to continue? (yes/no): ");
-          response = sc.next();
-                
-        } while(response.equalsIgnoreCase("yes"));
-        System.out.println("\n\tThank you, See you! ");
+          
+        } while(response);
+            System.out.println("\n\tThank you, See you! ");
     }
     
     public void addDoctor() {
-        Scanner sc = new Scanner(System.in);
-        Config conf = new Config();
+        Scanner sc = new Scanner(System.in);        
         
         System.out.print("\n");
         System.out.print("Doctor First Name: ");
@@ -69,8 +67,18 @@ public class DoctorInfo {
         String lname = sc.next();
         System.out.print("Doctor Specialization: ");
         String specialization = sc.next();
-        System.out.print("Doctor Contact Number: ");
-        String contnum = sc.next();
+  
+        String contnum;
+            while (true) {
+                System.out.print("Doctor Contact Number (11 digits): ");
+                contnum = sc.next();
+                if (contnum.matches("\\d{11}")) {
+                    break;
+                } else {
+                    System.out.println("Invalid contact number. Must be 11 digits and numeric.");
+                }
+            }
+        
         System.out.print("Doctor Availability Start: ");
         String availStart = sc.next();
         System.out.print("Doctor Availability End: ");
@@ -82,20 +90,29 @@ public class DoctorInfo {
     }
     
     private void viewDoctors() {
-        Config cnf = new Config();
-        
         String rodeQuery = "SELECT * FROM tbl_doctors";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number", "Availability Start", "Availability End"};
         String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTACTNUM", "dAVAILABILITY_START", "dAVAILABILITY_END"};
 
-        cnf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
+        conf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
     }
 
     private void updateDoctor() {
         Scanner sc = new Scanner(System.in);
         
-        System.out.print("Enter Doctor ID to update: ");
-        int id = sc.nextInt();
+        String doctorID = "";
+        boolean idexist = false;
+        
+        while(!idexist){
+            System.out.print("\nEnter Doctor ID to update: ");
+            doctorID = sc.next();
+            
+            if(conf.dIDExists(doctorID)){
+                idexist = true;
+            }else{
+                System.out.println("Invalid ID or ID not Existed");
+            }
+        }
         
         System.out.print("\n");
         System.out.print("Enter new First Name: ");
@@ -107,8 +124,16 @@ public class DoctorInfo {
         System.out.print("Enter new Specialization: ");
         String updspecialization = sc.next();
         
-        System.out.print("Enter new Contact Number: ");
-        String updcontnum = sc.next();
+        String updcontnum;
+            while (true) {
+                    System.out.print("Enter new Contact Number (11 digits): ");
+                    updcontnum = sc.next();
+                    if (updcontnum.matches("\\d{11}")) {
+                        break;
+                    } else {
+                        System.out.println("Invalid contact number. Must be 11 digits and numeric.");
+                    }
+            }
         
         System.out.print("Enter new Availability Start: ");
         String updavailStart = sc.next();
@@ -117,9 +142,8 @@ public class DoctorInfo {
         String updavailEnd = sc.next();
         
         String update = "UPDATE tbl_doctors SET dFNAME = ?, dLNAME = ?, dSPECIALIZATION = ?, dCONTACTNUM = ?, dAVAILABILITY_START = ?, dAVAILABILITY_END = ? WHERE dID = ?";
-        
-        Config cnf = new Config();
-        cnf.updateRecords(update, updfname, updlname, updspecialization, updcontnum, updavailStart, updavailEnd, id);
+      
+        conf.updateRecords(update, updfname, updlname, updspecialization, updcontnum, updavailStart, updavailEnd, doctorID);
     }
     
     private void deleteDoctor() {
@@ -130,7 +154,6 @@ public class DoctorInfo {
         
         String delete = "DELETE FROM tbl_doctors WHERE dID = ?";
         
-        Config cnf = new Config();
-        cnf.deleteRecords(delete, id);
+        conf.deleteRecords(delete, id);
     }
 }

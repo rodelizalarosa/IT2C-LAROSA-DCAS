@@ -5,64 +5,64 @@ import it2c.larosa.dcas.Config;
 import java.util.Scanner;
 
 public class StaffInfo {
-    
+        
+        Config conf = new Config();
     public static void manageStaffs (){
         
         Scanner sc = new Scanner (System.in);
-        int opt;
-        String response;
+        boolean response = true;
         
         do {
-        System.out.println("MANAGE STAFF INFORMATION");
-        System.out.println("-----------------------------------");
-        System.out.println("|    1. REGISTER A STAFF          |");
-        System.out.println("|    2. VIEW STAFF RECORD         |");
-        System.out.println("|    3. EDIT STAFF RECORD         |");
-        System.out.println("|    4. DELETE STAFF RECORD       |");
-        System.out.println("|    5. EXIT                      |");
-        System.out.println("-----------------------------------");
-        
-        System.out.print("\nEnter Option: ");
-        opt = sc.nextInt();
-        
-        while (opt < 1 || opt > 5) {
-            System.out.print("\tInvalid Input, Try Again: ");
-            opt = sc.nextInt();
-        }
-        
+            System.out.print("\n");
+            System.out.println("MANAGE STAFF INFORMATION");
+            System.out.println("-----------------------------------");
+            System.out.println("     1. REGISTER A STAFF           ");
+            System.out.println("     2. VIEW STAFF RECORD          ");
+            System.out.println("     3. EDIT STAFF RECORD          ");
+            System.out.println("     4. DELETE STAFF RECORD        ");
+            System.out.println("     5. EXIT                       ");
+            System.out.println("-----------------------------------");
+
+            System.out.print("\nEnter Option: ");
+            int opt = sc.nextInt();
+
+            while (opt < 1 || opt > 5) {
+                System.out.print("\tInvalid Input, Try Again: ");
+                opt = sc.nextInt();
+            }
+            
+            StaffInfo sINFO = new StaffInfo();
         switch (opt) {
             case 1:
-                StaffInfo add = new StaffInfo();
-                add.addStaff();
+                sINFO.addStaff();
                 break;
             case 2: 
-                StaffInfo view = new StaffInfo();
-                view.viewStaff();
+                sINFO.viewStaff();
                 break;
             case 3:
-                StaffInfo update = new StaffInfo();
-                update.updateStaff();
+                sINFO.viewStaff();
+                sINFO.updateStaff();
                 break;
             case 4:
-                StaffInfo delete = new StaffInfo();
-                delete.deleteStaff();
+                sINFO.viewStaff();
+                sINFO.deleteStaff();
+                sINFO.viewStaff();
                 break;
             case 5:
+                response = false;
                 System.out.println("Exiting...");
-                return;
+                break;
         }
-          System.out.print("\nDo you want to continue? (yes/no): ");
-          response = sc.next();
+//          System.out.print("\nDo you want to continue? (yes/no): ");
+//          response = sc.next();
                 
-        } while(response.equalsIgnoreCase("yes"));
-        System.out.println("\n\tThank you, See you! ");
+        } while(response);
+            System.out.println("\n\tThank you, See you! ");
   
-        
     }
 
    public void addStaff() {
         Scanner sc = new Scanner(System.in);
-        Config conf = new Config();
         
         System.out.print("\n");
         System.out.print("Staff First Name: ");
@@ -71,29 +71,48 @@ public class StaffInfo {
         String lname = sc.next();
         System.out.print("Staff Role: ");
         String role = sc.next();
-        System.out.print("Staff Contact Number: ");
-        String contnum = sc.next();
 
-        String sql = "INSERT INTO tbl_staff (dFNAME, dLNAME, dROLE, dCONTACTNUM) VALUES (?, ?, ?, ?)";
+        String contnum;
+            while (true) {
+                System.out.print("Staff Contact Number (11 digits): ");
+                contnum = sc.next();
+                if (contnum.matches("\\d{11}")) {
+                    break;
+                } else {
+                    System.out.println("Invalid contact number. Must be 11 digits and numeric.");
+                }
+            }
+
+        String sql = "INSERT INTO tbl_staff (sFNAME, sLNAME, sROLE, sCONTACTNUM) VALUES (?, ?, ?, ?)";
 
         conf.addRecords(sql, fname, lname, role, contnum); 
     }
 
-    private void viewStaff() {
-        Config cnf = new Config();
+    private void viewStaff() { 
         
         String rodeQuery = "SELECT * FROM tbl_staff";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role", "Contact Number"};
         String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTACTNUM"};
 
-        cnf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
+        conf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
     }
 
     private void updateStaff() {
         Scanner sc = new Scanner(System.in);
         
-        System.out.print("Enter Staff ID to update: ");
-        int id = sc.nextInt();
+        String stID = "";
+        boolean idexist = false;
+        
+        while(!idexist){
+            System.out.print("\nEnter Staff ID to update: ");
+            stID = sc.next();
+            
+            if(conf.sIDExists(stID)){
+                idexist = true;
+            }else{
+                System.out.println("Invalid ID or ID not Existed");
+            }
+        }
         
         System.out.print("\n");
         System.out.print("Enter new First Name: ");
@@ -104,14 +123,22 @@ public class StaffInfo {
         
         System.out.print("Enter new Role: ");
         String updrole = sc.next();
+           
+        String updcontnum;
+            while (true) {
+                System.out.print("Enter new Contact Number (11 digits): ");
+                updcontnum = sc.next();
+                if (updcontnum.matches("\\d{11}")) {
+                    break;
+                } else {
+                    System.out.println("Invalid contact number. Must be 11 digits and numeric.");
+                }
+            }
         
-        System.out.print("Enter new Contact Number: ");
-        String updcontnum = sc.next();
         
         String update = "UPDATE staff SET sFNAME = ?, sLNAME = ?, sROLE = ?, sCONTACTNUM = ? WHERE sID = ?";
-        
-        Config cnf = new Config();
-        cnf.updateRecords(update, updfname, updlname, updrole, updcontnum, id);
+
+        conf.updateRecords(update, updfname, updlname, updrole, updcontnum, stID);
     }
     
     private void deleteStaff() {
@@ -122,8 +149,7 @@ public class StaffInfo {
         
         String delete = "DELETE FROM staff WHERE sID = ?";
         
-        Config cnf = new Config();
-        cnf.deleteRecords(delete, id);
+        conf.deleteRecords(delete, id);
     }
 }
     

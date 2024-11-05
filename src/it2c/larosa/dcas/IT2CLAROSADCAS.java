@@ -3,6 +3,7 @@ package it2c.larosa.dcas;
 import dentClinic_data.PatientInfo;
 import dentClinic_data.DoctorInfo;
 import dentClinic_data.StaffInfo;
+import dentClinic_data.Appointment;
 import java.util.Scanner;
 
 public class IT2CLAROSADCAS {
@@ -12,7 +13,7 @@ public class IT2CLAROSADCAS {
         Scanner sc = new Scanner (System.in);
         String response;
         
- //   do {
+    do {
         System.out.print("\n");
         System.out.println("Welcome to Dental Clinic Appointment System");
         System.out.println("---------------------------------------");
@@ -33,30 +34,30 @@ public class IT2CLAROSADCAS {
                                       
         switch (act){
             case 1:
-                PatientInfo pi = new PatientInfo();
-                pi.managePatients();
+                PatientInfo.managePatients();
             break;
             case 2:
-                DoctorInfo dc = new DoctorInfo();
-                dc.manageDoctors();
+                DoctorInfo.manageDoctors();
             break;
             case 3:
-                StaffInfo sf = new StaffInfo();
-                sf.manageStaffs();
+                StaffInfo.manageStaffs();
             break;    
             case 4:
-                
+                Appointment.manageAppointments();
             break;
+            case 5:
+                
+                break;
             case 6: 
                 System.out.println("Exiting...");
             return;
         }
         
-//        System.out.print("\nDo you want to continue? (yes/no): ");
-//        String response = sc.next();
+        System.out.print("\nDo you want to continue? (yes/no): ");
+        response = sc.next();
                 
-//    } while(response.equals("yes"));
-//        System.out.println("\n\tThank you, See you! ");
+    } while(response.equals("yes"));
+        System.out.println("\n\tThank you, See you! ");
     
     }  
 

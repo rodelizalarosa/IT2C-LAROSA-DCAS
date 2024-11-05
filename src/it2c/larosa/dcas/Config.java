@@ -20,22 +20,7 @@ public class Config {
         }
         return con;
     }
-    
-//    public void addRecord(String sql, String... values) {
-//        try (Connection conn = this.connectDB(); // Use the connectDB method
-//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//
-//            // Loop through the values and set them in the prepared statement
-//            for (int i = 0; i < values.length; i++) {
-//                pstmt.setString(i + 1, values[i]); // PreparedStatement index starts at 1
-//            }
-//
-//            pstmt.executeUpdate();
-//            System.out.println("\nRecord added successfully!");
-//        } catch (SQLException e) {
-//            System.out.println("\nError adding record: " + e.getMessage());
-//        }
-    
+      
         
     public void addRecords(String sql, Object... values) {
         try (Connection conn = this.connectDB(); // Use the connectDB method
@@ -66,6 +51,7 @@ public class Config {
 
             prstmt.executeUpdate();
             System.out.println("\t\nRecord added successfully!");
+            System.out.print("\n");
         } catch (SQLException e) {
             System.out.println("\t\nError adding record: " + e.getMessage());
         }
@@ -163,6 +149,51 @@ public class Config {
         } catch (SQLException e) {
             System.out.println("Error deleting record: " + e.getMessage());
         }
+    }
+    
+    public boolean pIDExists(String patientID) {
+        String sql = "SELECT COUNT(*) FROM tbl_patients WHERE pID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, patientID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Patient ID: " + e.getMessage());
+        }
+            return false; 
+    }
+    
+    public boolean dIDExists(String doctorID) {
+        String sql = "SELECT COUNT(*) FROM tbl_doctors WHERE dID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, doctorID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Doctor ID: " + e.getMessage());
+        }
+            return false; 
+    }
+    
+    public boolean sIDExists(String staffID) {
+        String sql = "SELECT COUNT(*) FROM tbl_staff WHERE sID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, staffID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Staff ID: " + e.getMessage());
+        }
+            return false; 
     }
 
 }
