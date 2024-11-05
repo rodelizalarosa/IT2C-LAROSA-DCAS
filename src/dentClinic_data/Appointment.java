@@ -78,7 +78,7 @@ public class Appointment {
         System.out.print("Enter Patient ID: ");
         String patientID = sc.next();
         System.out.print("Enter Staff ID (optional, press Enter to skip): ");
-        String staffID = sc.nextLine().trim();
+        String staffID = sc.next().trim();
         System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
         String date = sc.next();
         System.out.print("Enter Appointment Time (HH:MM): ");
@@ -93,16 +93,20 @@ public class Appointment {
 
         String status = "Pending";
 
-        String sql = "INSERT INTO tbl_appointments (doctorID, patientID, staffID, date, time, service, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_appointments (doctorID, patientID, staffID, appDATE, appTIME, appService, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         conf.addRecords(sql, doctorID, patientID, staffID.isEmpty() ? null : staffID, date, time, service, status);
+        if (conf == null) {
+            conf = new Config();
+        }
+
     }
 
     public void viewAppointments() {
-    String rodequery = "SELECT a.appID, a.doctorID, p.firstName, p.lastName, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
+    String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
                    "FROM tbl_appointments a " +
-                   "INNER JOIN PatientInfo p ON a.patientID = p.patientID";
+                   "INNER JOIN tbl_patients p ON a.patientID = p.pID";
     String[] rodeheaders = {"Appointment ID", "Doctor ID", "Patient First Name", "Patient Last Name", "Staff ID", "Date", "Time", "Service", "Status"};
-    String[] rodecolumns = {"appID", "doctorID", "firstName", "lastName", "staffID", "appDATE", "appTIME", "appService", "status"};
+    String[] rodecolumns = {"appID", "doctorID", "pFNAME", "pLNAME", "staffID", "appDATE", "appTIME", "appService", "status"};
     conf.viewRecords(rodequery, rodeheaders, rodecolumns);
 }
 

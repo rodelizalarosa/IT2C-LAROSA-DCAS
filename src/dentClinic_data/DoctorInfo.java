@@ -13,7 +13,7 @@ public class DoctorInfo {
         
         do { 
             System.out.print("\n");
-            System.out.println("MANAGE DOCTOR INFORMATION");
+            System.out.println("      MANAGE DOCTOR INFORMATION    ");
             System.out.println("-----------------------------------");
             System.out.println("      1. REGISTER A DOCTOR         ");
             System.out.println("      2. VIEW DOCTOR RECORD        ");
@@ -49,7 +49,7 @@ public class DoctorInfo {
                 break;
             case 5:
                 response = false;
-                System.out.println("Exiting...");
+                System.out.println("Exiting Manage Doctor Information...");
                 break;
         }
           
@@ -66,7 +66,7 @@ public class DoctorInfo {
         System.out.print("Doctor Last Name: ");
         String lname = sc.next();
         System.out.print("Doctor Specialization: ");
-        String specialization = sc.next();
+        String specialization = sc.nextLine();
   
         String contnum;
             while (true) {

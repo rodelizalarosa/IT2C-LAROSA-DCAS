@@ -15,7 +15,7 @@ public class PatientInfo {
         
         do {
                 System.out.print("\n");
-                System.out.println("MANAGE PATIENT INFORMATION");
+                System.out.println("     MANAGE PATIENT INFORMATION    ");
                 System.out.println("-----------------------------------");
                 System.out.println("      1. REGISTER A PATIENT        ");
                 System.out.println("      2. VIEW PATIENT RECORD       ");
@@ -50,7 +50,7 @@ public class PatientInfo {
                         break;
                     case 5:
                         response = false;
-                        System.out.println("Exiting...");
+                        System.out.println("Exiting Manage Patient Information...");
                         break;
                 }
                            

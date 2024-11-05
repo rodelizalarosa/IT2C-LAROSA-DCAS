@@ -27,7 +27,7 @@ public class IT2CLAROSADCAS {
                 
         System.out.print ("Enter Action: ");
         int act = sc.nextInt();
-            while (act==0 && act>=6){
+            while (act<0 && act>6){
                 System.out.print("Invalid Input, Try Again: ");
                 act = sc.nextInt();
             }
@@ -49,8 +49,9 @@ public class IT2CLAROSADCAS {
                 
                 break;
             case 6: 
-                System.out.println("Exiting...");
-            return;
+                System.out.println("Exiting Schedule an Appointment...");
+                System.exit(0);
+            break;
         }
         
         System.out.print("\nDo you want to continue? (yes/no): ");

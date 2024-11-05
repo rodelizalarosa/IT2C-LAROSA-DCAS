@@ -14,7 +14,7 @@ public class StaffInfo {
         
         do {
             System.out.print("\n");
-            System.out.println("MANAGE STAFF INFORMATION");
+            System.out.println("     MANAGE STAFF INFORMATION     ");
             System.out.println("-----------------------------------");
             System.out.println("     1. REGISTER A STAFF           ");
             System.out.println("     2. VIEW STAFF RECORD          ");
@@ -50,7 +50,7 @@ public class StaffInfo {
                 break;
             case 5:
                 response = false;
-                System.out.println("Exiting...");
+                System.out.println("Exiting Manage Staff Information...");
                 break;
         }
 //          System.out.print("\nDo you want to continue? (yes/no): ");
