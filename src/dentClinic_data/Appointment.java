@@ -7,20 +7,22 @@ public class Appointment {
     Config conf = new Config();
 
     private void displayServices() {
-        System.out.println("Available Dental Services:");
-        System.out.println("1. Cleaning");
-        System.out.println("2. Filling");
-        System.out.println("3. Extraction");
-        System.out.println("4. Root Canal");
-        System.out.println("5. Orthodontic Treatment");
-        System.out.println("6. Whitening");
+        System.out.println("\n");
+        System.out.println("  Available Dental Services:");
+        System.out.println("    1. Cleaning");
+        System.out.println("    2. Filling");
+        System.out.println("    3. Extraction");
+        System.out.println("    4. Root Canal");
+        System.out.println("    5. Orthodontic Treatment");
+        System.out.println("    6. Whitening");
     }
 
     private void displayStatusOptions() {
+        System.out.println("\n");
         System.out.println("Appointment Status Options:");
-        System.out.println("1. Pending");
-        System.out.println("2. Complete");
-        System.out.println("3. Cancelled");
+        System.out.println("    1. Pending");
+        System.out.println("    2. Complete");
+        System.out.println("    3. Cancelled");
     }
 
     public static void manageAppointments() {
@@ -29,7 +31,7 @@ public class Appointment {
 
         do {
             System.out.print("\n");
-            System.out.println("MANAGE APPOINTMENTS");
+            System.out.println("      MANAGE APPOINTMENTS     ");
             System.out.println("------------------------------");
             System.out.println("     1. SCHEDULE APPOINTMENT  ");
             System.out.println("     2. VIEW APPOINTMENTS     ");
@@ -59,9 +61,9 @@ public class Appointment {
                 case 5:
                     app.cancelAppointment();
                     break;
-                case 6:
+                case 6: 
                     response = false;
-                    System.out.println("Exiting...");
+                    System.out.println("Exiting Schedule an Appointment...");
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");

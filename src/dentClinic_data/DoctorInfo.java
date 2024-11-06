@@ -49,12 +49,11 @@ public class DoctorInfo {
                 break;
             case 5:
                 response = false;
-                System.out.println("Exiting Manage Doctor Information...");
+                System.out.println("\nExiting Manage Doctor Information...");
                 break;
         }
           
         } while(response);
-            System.out.println("\n\tThank you, See you! ");
     }
     
     public void addDoctor() {

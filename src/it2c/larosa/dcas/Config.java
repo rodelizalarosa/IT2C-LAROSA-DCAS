@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class Config {
     
@@ -194,6 +195,10 @@ public class Config {
             System.out.println("Error checking Staff ID: " + e.getMessage());
         }
             return false; 
+    }
+
+    public Map<String, String> getRecordMap(String query, String appID) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

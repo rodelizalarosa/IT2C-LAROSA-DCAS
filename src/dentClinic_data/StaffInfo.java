@@ -50,14 +50,13 @@ public class StaffInfo {
                 break;
             case 5:
                 response = false;
-                System.out.println("Exiting Manage Staff Information...");
+                System.out.println("\nExiting Manage Staff Information...");
                 break;
         }
 //          System.out.print("\nDo you want to continue? (yes/no): ");
 //          response = sc.next();
                 
         } while(response);
-            System.out.println("\n\tThank you, See you! ");
   
     }
 

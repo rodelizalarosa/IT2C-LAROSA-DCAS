@@ -50,13 +50,12 @@ public class PatientInfo {
                         break;
                     case 5:
                         response = false;
-                        System.out.println("Exiting Manage Patient Information...");
+                        System.out.println("\nExiting Manage Patient Information...");
                         break;
                 }
                            
             } while(response);
-            System.out.println("\n\tThank you, See you! ");
-    }
+}
     
     public void addPatients(){
         Scanner sc = new Scanner(System.in);

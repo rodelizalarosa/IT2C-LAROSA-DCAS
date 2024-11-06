@@ -4,6 +4,7 @@ import dentClinic_data.PatientInfo;
 import dentClinic_data.DoctorInfo;
 import dentClinic_data.StaffInfo;
 import dentClinic_data.Appointment;
+import dentClinic_data.AppReport;
 import java.util.Scanner;
 
 public class IT2CLAROSADCAS {
@@ -46,10 +47,10 @@ public class IT2CLAROSADCAS {
                 Appointment.manageAppointments();
             break;
             case 5:
-                
+                AppReport.viewIndvAppointment();
                 break;
             case 6: 
-                System.out.println("Exiting Schedule an Appointment...");
+                System.out.println("Exiting the program...");
                 System.exit(0);
             break;
         }
@@ -57,7 +58,7 @@ public class IT2CLAROSADCAS {
         System.out.print("\nDo you want to continue? (yes/no): ");
         response = sc.next();
                 
-    } while(response.equals("yes"));
+    } while(response.equals("yes") && response.equals("Yes") );
         System.out.println("\n\tThank you, See you! ");
     
     }  
