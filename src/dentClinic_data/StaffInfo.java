@@ -2,6 +2,7 @@
 package dentClinic_data;
 
 import it2c.larosa.dcas.Config;
+import it2c.larosa.dcas.viewConfig;
 import java.util.Scanner;
 
 public class StaffInfo {
@@ -82,7 +83,7 @@ public class StaffInfo {
                 }
             }
 
-        String sql = "INSERT INTO tbl_staff (sFNAME, sLNAME, sROLE, sCONTACTNUM) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_staff (sFNAME, sLNAME, sROLE, sCONTNUM) VALUES (?, ?, ?, ?)";
 
         conf.addRecords(sql, fname, lname, role, contnum); 
     }
@@ -91,9 +92,10 @@ public class StaffInfo {
         
         String rodeQuery = "SELECT * FROM tbl_staff";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role", "Contact Number"};
-        String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTACTNUM"};
-
-        conf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
+        String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTNUM"};
+        
+        viewConfig cnf = new viewConfig();
+        cnf.viewStaff(rodeQuery, rodeHeaders, rodeColumns);
     }
 
     private void updateStaff() {
@@ -101,23 +103,33 @@ public class StaffInfo {
         
         String stID = "";
         boolean idexist = false;
-        
-        while(!idexist){
-            System.out.print("\nEnter Staff ID to update: ");
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idexist && attempts < maxAttempts) {
+            System.out.print("\nEnter Staff ID to update (3 max attempts): ");
             stID = sc.next();
-            
-            if(conf.sIDExists(stID)){
+
+            if (conf.sIDExists(stID)) {
                 idexist = true;
-            }else{
-                System.out.println("Invalid ID or ID not Existed");
+                System.out.println("Staff ID found.");
+            } else {
+                attempts++;
+                System.out.println("\tInvalid ID or ID not Existed.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
             }
-        }
+        }    
         
         System.out.print("\n");
         System.out.print("Enter new First Name: ");
         String updfname = sc.next();
         
         System.out.print("Enter new Last Name: ");
+        sc.nextLine();
         String updlname = sc.next();
         
         System.out.print("Enter new Role: ");
@@ -135,7 +147,7 @@ public class StaffInfo {
             }
         
         
-        String update = "UPDATE staff SET sFNAME = ?, sLNAME = ?, sROLE = ?, sCONTACTNUM = ? WHERE sID = ?";
+        String update = "UPDATE tbl_staff SET sFNAME = ?, sLNAME = ?, sROLE = ?, sCONTNUM = ? WHERE sID = ?";
 
         conf.updateRecords(update, updfname, updlname, updrole, updcontnum, stID);
     }
@@ -146,7 +158,7 @@ public class StaffInfo {
         System.out.print("Enter Staff ID to delete: ");
         int id = sc.nextInt();
         
-        String delete = "DELETE FROM staff WHERE sID = ?";
+        String delete = "DELETE FROM tbl_staff WHERE sID = ?";
         
         conf.deleteRecords(delete, id);
     }

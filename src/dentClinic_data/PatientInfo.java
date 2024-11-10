@@ -2,6 +2,7 @@ package dentClinic_data;
 
 import static it2c.larosa.dcas.Config.connectDB;
 import it2c.larosa.dcas.Config;
+import it2c.larosa.dcas.viewConfig;
 import java.util.Scanner;
 
 
@@ -26,7 +27,7 @@ public class PatientInfo {
                 
                 System.out.print ("\nEnter Option: ");
                 int opt = sc.nextInt();
-                    while (opt==0 && opt>6){
+                    while (opt < 1 ||  opt > 5){
                        System.out.print("\tInvalid Input, Try Again: ");
                           opt = sc.nextInt();
                     }   
@@ -54,7 +55,7 @@ public class PatientInfo {
                         break;
                 }
                            
-            } while(response);
+        } while(response);
 }
     
     public void addPatients(){
@@ -63,9 +64,9 @@ public class PatientInfo {
         
         System.out.print("\n");
         System.out.print("Patient First Name: ");
-        String fname = sc.next();
+        String fname = sc.nextLine();
         System.out.print("Patient Last Name: ");
-        String lname = sc.next();
+        String lname = sc.nextLine();
         System.out.print("Patient Age: ");
         int age = sc.nextInt();
         System.out.print("Patient Gender: ");
@@ -87,19 +88,19 @@ public class PatientInfo {
         System.out.print("Patient Address: ");
         String address = sc.next();
 
-        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTACTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         conf.addRecords(sql, fname, lname, age, gender, contnum, email, address);
     }
     
     private void viewPatient() {
-//        Config cnf = new Config();
+        viewConfig cnf = new viewConfig();
         
         String rodeQuery = "SELECT * FROM tbl_patients";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender", "Contact Number", "Email", "Address"};
-        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTACTNUM", "pEMAIL", "pADDRESS"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTNUM", "pEMAIL", "pADDRESS"};
 
-        conf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
+        cnf.viewPatient(rodeQuery, rodeHeaders, rodeColumns);
     }
 
     
@@ -108,24 +109,34 @@ public class PatientInfo {
         
         String patientID = "";
         boolean idexist = false;
-        
-        while(!idexist){
-            System.out.print("\nEnter Patient ID to update: ");
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idexist && attempts < maxAttempts) {
+            System.out.print("\nEnter Patient ID to update (3 max attempts): ");
             patientID = sc.next();
-            
-            if(conf.pIDExists(patientID)){
+
+            if (conf.pIDExists(patientID)) {
                 idexist = true;
-            }else{
-                System.out.println("Invalid ID or ID not Existed");
+                System.out.println("Patient ID found.");
+            } else {
+                attempts++;
+                System.out.println("\tInvalid ID or ID not Existed.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
             }
-        }
-                
+        }    
+        
         System.out.print("\n");
         System.out.print("Enter new First Name: ");
         String updfname = sc.next();
         
         System.out.print("Enter new Last Name: ");
-        String updlname = sc.next();
+        sc.nextLine();
+        String updlname = sc.nextLine();
         
         System.out.print("Enter new Age: ");
         int updage = sc.nextInt();

@@ -2,6 +2,7 @@ package dentClinic_data;
 
 import static it2c.larosa.dcas.Config.connectDB;
 import it2c.larosa.dcas.Config;
+import it2c.larosa.dcas.viewConfig;
 import java.util.Scanner;
 
 public class DoctorInfo {
@@ -61,9 +62,9 @@ public class DoctorInfo {
         
         System.out.print("\n");
         System.out.print("Doctor First Name: ");
-        String fname = sc.next();
+        String fname = sc.nextLine();
         System.out.print("Doctor Last Name: ");
-        String lname = sc.next();
+        String lname = sc.nextLine();
         System.out.print("Doctor Specialization: ");
         String specialization = sc.nextLine();
   
@@ -83,7 +84,7 @@ public class DoctorInfo {
         System.out.print("Doctor Availability End: ");
         String availEnd = sc.next();
 
-        String sql = "INSERT INTO tbl_doctors (dFNAME, dLNAME, dSPECIALIZATION, dCONTACTNUM, dAVAILABILITY_START, dAVAILABILITY_END) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_doctors (dFNAME, dLNAME, dSPECIALIZATION, dCONTNUM, dAVAILABILITY_START, dAVAILABILITY_END) VALUES (?, ?, ?, ?, ?, ?)";
 
         conf.addRecords(sql, fname, lname, specialization, contnum, availStart, availEnd);
     }
@@ -91,9 +92,10 @@ public class DoctorInfo {
     private void viewDoctors() {
         String rodeQuery = "SELECT * FROM tbl_doctors";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number", "Availability Start", "Availability End"};
-        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTACTNUM", "dAVAILABILITY_START", "dAVAILABILITY_END"};
-
-        conf.viewRecords(rodeQuery, rodeHeaders, rodeColumns);
+        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTNUM", "dAVAILABILITY_START", "dAVAILABILITY_END"};
+        
+        viewConfig cnf = new viewConfig();
+        cnf.viewDoctor(rodeQuery, rodeHeaders, rodeColumns);
     }
 
     private void updateDoctor() {
@@ -101,18 +103,26 @@ public class DoctorInfo {
         
         String doctorID = "";
         boolean idexist = false;
-        
-        while(!idexist){
-            System.out.print("\nEnter Doctor ID to update: ");
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idexist && attempts < maxAttempts) {
+            System.out.print("\nEnter Doctor ID to update (3 max attempts): ");
             doctorID = sc.next();
-            
-            if(conf.dIDExists(doctorID)){
+
+            if (conf.dIDExists(doctorID)) {
                 idexist = true;
-            }else{
-                System.out.println("Invalid ID or ID not Existed");
+                System.out.println("Doctor ID found.");
+            } else {
+                attempts++;
+                System.out.println("\tInvalid ID or ID not Existed.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
             }
-        }
-        
+        }            
         System.out.print("\n");
         System.out.print("Enter new First Name: ");
         String updfname = sc.next();
@@ -140,7 +150,7 @@ public class DoctorInfo {
         System.out.print("Enter new Availability End: ");
         String updavailEnd = sc.next();
         
-        String update = "UPDATE tbl_doctors SET dFNAME = ?, dLNAME = ?, dSPECIALIZATION = ?, dCONTACTNUM = ?, dAVAILABILITY_START = ?, dAVAILABILITY_END = ? WHERE dID = ?";
+        String update = "UPDATE tbl_doctors SET dFNAME = ?, dLNAME = ?, dSPECIALIZATION = ?, dCONTNUM = ?, dAVAILABILITY_START = ?, dAVAILABILITY_END = ? WHERE dID = ?";
       
         conf.updateRecords(update, updfname, updlname, updspecialization, updcontnum, updavailStart, updavailEnd, doctorID);
     }

@@ -1,7 +1,8 @@
-package dentClinic_data;
+ package dentClinic_data;
 
 import java.util.Scanner;
 import it2c.larosa.dcas.Config;
+import it2c.larosa.dcas.viewConfig;
 
 public class Appointment {
     Config conf = new Config();
@@ -20,9 +21,8 @@ public class Appointment {
     private void displayStatusOptions() {
         System.out.println("\n");
         System.out.println("Appointment Status Options:");
-        System.out.println("    1. Pending");
-        System.out.println("    2. Complete");
-        System.out.println("    3. Cancelled");
+        System.out.println("    1. Complete");
+        System.out.println("    2. Cancelled");
     }
 
     public static void manageAppointments() {
@@ -31,7 +31,7 @@ public class Appointment {
 
         do {
             System.out.print("\n");
-            System.out.println("      MANAGE APPOINTMENTS     ");
+            System.out.println("          APPOINTMENTS        ");
             System.out.println("------------------------------");
             System.out.println("     1. SCHEDULE APPOINTMENT  ");
             System.out.println("     2. VIEW APPOINTMENTS     ");
@@ -50,7 +50,7 @@ public class Appointment {
                     app.scheduleAppointment();
                     break;
                 case 2:
-                    app.viewAppointments();
+                    app.viewAppointment();
                     break;
                 case 3:
                     app.updateAppointment();
@@ -71,22 +71,78 @@ public class Appointment {
 
         } while (response);
     }
+    
+    private boolean isIDValid(String tableName, String idColumn, String id) {
+        String query = "SELECT COUNT(*) FROM " + tableName + " WHERE " + idColumn + " = ?";
+        return conf.recordExists(query, id);
+    }
+    
+    private void viewDentist() {
+        String rodeQuery = "SELECT dID, dFNAME, dLNAME, dSPECIALIZATION  FROM tbl_doctors";
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization"};
+        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION"};
+        
+        viewConfig cnf = new viewConfig();
+        cnf.viewDentist(rodeQuery, rodeHeaders, rodeColumns);
+    }
+    
+     private void viewPatients() {
+        viewConfig cnf = new viewConfig();
+        
+        String rodeQuery = "SELECT pID, pFNAME, pLNAME, pAGE, pGENDER FROM tbl_patients";
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER"};
 
+        cnf.viewPatients(rodeQuery, rodeHeaders, rodeColumns);
+    }
+   
+      private void viewStaff() { 
+        
+        String rodeQuery = "SELECT sID, sFNAME, sLNAME, sROLE FROM tbl_staff";
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role"};
+        String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE"};
+        
+        viewConfig cnf = new viewConfig();
+        cnf.viewStaff(rodeQuery, rodeHeaders, rodeColumns);
+    }
+    
     public void scheduleAppointment() {
         Scanner sc = new Scanner(System.in);
+        
+        viewPatients();
+        String patientID;
+        do {
+            System.out.print("Enter Patient ID: ");
+            patientID = sc.next();
+            if (!isIDValid("tbl_patients", "pID", patientID)) {
+                System.out.println("Invalid Patient ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_patients", "pID", patientID));
 
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = sc.next();
-        System.out.print("Enter Patient ID: ");
-        String patientID = sc.next();
-        System.out.print("Enter Staff ID (optional, press Enter to skip): ");
-        String staffID = sc.next().trim();
+        viewDentist();
+        String doctorID;
+        do {
+            System.out.print("Enter Doctor ID: ");
+            doctorID = sc.next();
+            if (!isIDValid("tbl_doctors", "dID", doctorID)) {
+                System.out.println("Invalid Doctor ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_doctors", "dID", doctorID));
+
+        viewStaff();
+        String staffID;
+        do {
+            System.out.print("Enter Staff ID: ");
+            staffID = sc.next();
+            if (!isIDValid("tbl_staff", "sID", staffID)) {
+                System.out.println("Invalid Staff ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_staff", "sID", staffID));
         System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
         String date = sc.next();
         System.out.print("Enter Appointment Time (HH:MM): ");
         String time = sc.next();
-
-        System.out.print("\n");
+        
         displayServices();
         System.out.print("Select Service (Enter number): ");
         int serviceOption = sc.nextInt();
@@ -103,30 +159,39 @@ public class Appointment {
 
     }
 
-    public void viewAppointments() {
-    String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
-                   "FROM tbl_appointments a " +
-                   "INNER JOIN tbl_patients p ON a.patientID = p.pID";
-    String[] rodeheaders = {"Appointment ID", "Doctor ID", "Patient First Name", "Patient Last Name", "Staff ID", "Date", "Time", "Service", "Status"};
-    String[] rodecolumns = {"appID", "doctorID", "pFNAME", "pLNAME", "staffID", "appDATE", "appTIME", "appService", "status"};
-    conf.viewRecords(rodequery, rodeheaders, rodecolumns);
-}
+    public void viewAppointment() {
+        String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
+                       "FROM tbl_appointments a " +
+                       "INNER JOIN tbl_patients p ON a.patientID = p.pID";
+        String[] rodeheaders = {"Appointment ID", "Doctor ID", "Patient First Name", "Patient Last Name", "Staff ID", "Date", "Time", "Service", "Status"};
+        String[] rodecolumns = {"appID", "doctorID", "pFNAME", "pLNAME", "staffID", "appDATE", "appTIME", "appService", "status"};
+        viewConfig cnf = new viewConfig ();
+        cnf.viewAppointment(rodequery, rodeheaders, rodecolumns);
+    }
 
 
     public void updateStatus() {
         Scanner sc = new Scanner(System.in);
-       
+
         System.out.print("Enter Appointment ID to update status: ");
         String appID = sc.next();
+
+        String currentStatus = conf.getStatus(appID); 
+        
+        if (!currentStatus.equals("Pending")) {
+            System.out.println("Only appointments with 'Pending' status can be updated.");
+            return;
+        }
 
         displayStatusOptions();
         System.out.print("Select new Status (Enter number): ");
         int statusOption = sc.nextInt();
-        String[] statuses = {"Pending", "Complete", "Cancelled"};
+        String[] statuses = {"Complete", "Cancelled"};
         String status = statuses[statusOption - 1];
 
         String update = "UPDATE tbl_appointments SET status = ? WHERE appID = ?";
         conf.updateRecords(update, status, appID);
+
     }
 
     public void updateAppointment() {
@@ -161,6 +226,13 @@ public class Appointment {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter Appointment ID to cancel: ");
         String appID = sc.next();
+
+        String currentStatus = conf.getStatus(appID);
+
+        if (currentStatus.equals("Complete")) {
+            System.out.println("You cannot cancel an appointment once it is marked as 'Complete'.");
+            return;
+        }
 
         String delete = "DELETE FROM tbl_appointments WHERE appID = ?";
         conf.deleteRecords(delete, appID);

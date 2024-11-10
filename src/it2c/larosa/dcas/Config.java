@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 public class Config {
     
@@ -196,9 +195,45 @@ public class Config {
         }
             return false; 
     }
+    
+     public String getStatus(String appID) {
+        String status = null;
+        String query = "SELECT status FROM tbl_appointments WHERE appID = ?";
+        
+        try (Connection conn = connectDB();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, appID);
 
-    public Map<String, String> getRecordMap(String query, String appID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    status = rs.getString("status");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching appointment status: " + e.getMessage());
+        }
+
+        return status;
     }
+     
+         public boolean recordExists(String query, String id) {
+        boolean exists = false;
+
+        try (Connection conn = connectDB();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    exists = rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking if record exists: " + e.getMessage());
+        }
+
+        return exists;
+    }
+
 
 }
