@@ -123,7 +123,7 @@ public class Appointment {
         String doctorID;
         do {
             System.out.print("Enter Doctor ID: ");
-            doctorID = sc.next();
+            doctorID = sc.next();  
             if (!isIDValid("tbl_doctors", "dID", doctorID)) {
                 System.out.println("Invalid Doctor ID. Please try again.");
             }
@@ -138,26 +138,39 @@ public class Appointment {
                 System.out.println("Invalid Staff ID. Please try again.");
             }
         } while (!isIDValid("tbl_staff", "sID", staffID));
+        
         System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
         String date = sc.next();
         System.out.print("Enter Appointment Time (HH:MM): ");
         String time = sc.next();
         
         displayServices();
-        System.out.print("Select Service (Enter number): ");
-        int serviceOption = sc.nextInt();
+        System.out.print("Select Services (Enter numbers separated by commas): ");
+        sc.nextLine();  
+        String serviceInput = sc.nextLine();
+
         String[] services = {"Cleaning", "Filling", "Extraction", "Root Canal", "Orthodontic Treatment", "Whitening"};
-        String service = services[serviceOption - 1];
+        StringBuilder selectedServices = new StringBuilder();
+
+        String[] serviceNumbers = serviceInput.split(",");
+        for (String num : serviceNumbers) {
+            int serviceIndex = Integer.parseInt(num.trim()) - 1;
+            if (serviceIndex >= 0 && serviceIndex < services.length) {
+                if (selectedServices.length() > 0) {
+                    selectedServices.append(", ");
+                }
+                selectedServices.append(services[serviceIndex]);
+            } else {
+                System.out.println("Invalid service option: " + num);
+            }
+        }
 
         String status = "Pending";
 
         String sql = "INSERT INTO tbl_appointments (doctorID, patientID, staffID, appDATE, appTIME, appService, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        conf.addRecords(sql, doctorID, patientID, staffID.isEmpty() ? null : staffID, date, time, service, status);
-        if (conf == null) {
-            conf = new Config();
-        }
-
+        conf.addRecords(sql, doctorID, patientID, staffID.isEmpty() ? null : staffID, date, time, selectedServices.toString(), status);
     }
+
 
     public void viewAppointment() {
         String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
@@ -195,32 +208,90 @@ public class Appointment {
     }
 
     public void updateAppointment() {
-        Scanner sc = new Scanner(System.in);
-        
-        System.out.print("Enter Appointment ID to update: ");
-        String appID = sc.next();
+    Scanner sc = new Scanner(System.in);
+    
+        String appID = "";
+        boolean idExists = false;
+        int attempts = 0;
+        int maxAttempts = 3;
 
-        System.out.print("Enter new Doctor ID: ");
-        String doctorID = sc.next();
-        System.out.print("Enter new Patient ID: ");
-        String patientID = sc.next();
-        System.out.print("Enter new Staff ID: ");
-        String staffID = sc.next();
+        while (!idExists && attempts < maxAttempts) {
+            System.out.print("\nEnter Appointment ID to update (3 max attempts): ");
+            appID = sc.next();
+            if (conf.appIDExists(appID)) {
+                idExists = true;
+                System.out.println("Appointment ID found.");
+            } else {
+                attempts++;
+                System.out.println("\tInvalid ID or ID does not exist.");
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
+            }
+        }    
+
+       
+        String doctorID;
+        do {
+            System.out.print("Enter new Doctor ID: ");
+            doctorID = sc.next();
+            if (!isIDValid("tbl_doctors", "dID", doctorID)) {
+                System.out.println("Invalid Doctor ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_doctors", "dID", doctorID));
+
+      
+        String patientID;
+        do {
+            System.out.print("Enter new Patient ID: ");
+            patientID = sc.next();
+            if (!isIDValid("tbl_patients", "pID", patientID)) {
+                System.out.println("Invalid Patient ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_patients", "pID", patientID));
+
+        
+        String staffID;
+        do {
+            System.out.print("Enter new Staff ID: ");
+            staffID = sc.next();
+            if (!isIDValid("tbl_staff", "sID", staffID)) {
+                System.out.println("Invalid Staff ID. Please try again.");
+            }
+        } while (!isIDValid("tbl_staff", "sID", staffID));
+
         System.out.print("Enter new Date (YYYY-MM-DD): ");
         String date = sc.next();
         System.out.print("Enter new Time (HH:MM): ");
         String time = sc.next();
-        
-        System.out.print("\n");
+
         displayServices();
-        System.out.print("Select new Service (Enter number): ");
-        int serviceOption = sc.nextInt();
+        System.out.print("Select new Services (Enter numbers separated by commas): ");
+        sc.nextLine();  
+        String serviceInput = sc.nextLine();
+
         String[] services = {"Cleaning", "Filling", "Extraction", "Root Canal", "Orthodontic Treatment", "Whitening"};
-        String service = services[serviceOption - 1];
+        StringBuilder selectedServices = new StringBuilder();
+
+        String[] serviceNumbers = serviceInput.split(",");
+        for (String num : serviceNumbers) {
+            int serviceIndex = Integer.parseInt(num.trim()) - 1;
+            if (serviceIndex >= 0 && serviceIndex < services.length) {
+                if (selectedServices.length() > 0) {
+                    selectedServices.append(", ");
+                }
+                selectedServices.append(services[serviceIndex]);
+            } else {
+                System.out.println("Invalid service option: " + num);
+            }
+        }
 
         String update = "UPDATE tbl_appointments SET doctorID = ?, patientID = ?, staffID = ?, appDATE = ?, appTIME = ?, appService = ? WHERE appID = ?";
-        conf.updateRecords(update, doctorID, patientID, staffID, date, time, service, appID);
+        conf.updateRecords(update, doctorID, patientID, staffID, date, time, selectedServices.toString(), appID);
+        System.out.println("Appointment updated successfully.");
     }
+
 
     public void cancelAppointment() {
         Scanner sc = new Scanner(System.in);
