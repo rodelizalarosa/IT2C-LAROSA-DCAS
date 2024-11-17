@@ -14,7 +14,7 @@ public class Config {
         try {
             Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
             con = DriverManager.getConnection("jdbc:sqlite:rode.db"); // Establish connection
-            System.out.println("\t\nConnection Successful!");
+            System.out.println("\t\n(Connection Successful!)");
         } catch (Exception e) {
             System.out.println("\t\nConnection Failed: " + e);
         }
@@ -129,27 +129,28 @@ public class Config {
         }
     }
     
-    // Add this method in the config class
-    public void deleteRecords(String sql, Object... values) {
+    public boolean deleteRecords(String sql, Object... values) {
         try (Connection conn = this.connectDB();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Loop through the values and set them in the prepared statement dynamically
             for (int i = 0; i < values.length; i++) {
                 if (values[i] instanceof Integer) {
-                    pstmt.setInt(i + 1, (Integer) values[i]); // If the value is Integer
+                    pstmt.setInt(i + 1, (Integer) values[i]); 
                 } else {
-                    pstmt.setString(i + 1, values[i].toString()); // Default to String for other types
+                    pstmt.setString(i + 1, values[i].toString()); 
                 }
             }
 
-            pstmt.executeUpdate();
-            System.out.println("Record deleted successfully!");
-            
+            int rowsAffected = pstmt.executeUpdate();
+
+            return rowsAffected > 0; //return kapag successful ang deletion
+
         } catch (SQLException e) {
             System.out.println("Error deleting record: " + e.getMessage());
         }
+        return false; // return kapag false or no rows affected
     }
+
     
     public boolean pIDExists(String patientID) {
         String sql = "SELECT COUNT(*) FROM tbl_patients WHERE pID = ?";
@@ -164,6 +165,23 @@ public class Config {
             System.out.println("Error checking Patient ID: " + e.getMessage());
         }
             return false; 
+    }
+    
+    public boolean hasPatientApp(String patientID) {
+        String query = "SELECT COUNT(*) FROM tbl_appointments WHERE patientID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, patientID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Patient Appointment: " + e.getMessage());
+        }
+        return false; 
     }
     
     public boolean dIDExists(String doctorID) {
@@ -181,6 +199,23 @@ public class Config {
             return false; 
     }
     
+    public boolean hasDoctorApp(String doctorID) {
+        String query = "SELECT COUNT(*) FROM tbl_appointments WHERE doctorID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, doctorID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Doctor Appointment: " + e.getMessage());
+        }
+        return false; 
+    }
+    
     public boolean sIDExists(String staffID) {
         String sql = "SELECT COUNT(*) FROM tbl_staff WHERE sID = ?";
         try (Connection conn = connectDB();
@@ -193,7 +228,25 @@ public class Config {
         } catch (SQLException e) {
             System.out.println("Error checking Staff ID: " + e.getMessage());
         }
-            return false; 
+        
+        return false; 
+    }
+    
+    public boolean hasStaffApp(String staffID) {
+        String query = "SELECT COUNT(*) FROM tbl_appointments WHERE staffID = ?";
+        try (Connection conn = connectDB();
+            PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, staffID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking Staff Appointment: " + e.getMessage());
+        }
+        return false; 
     }
     
     public boolean appIDExists(String appID) {
@@ -208,7 +261,8 @@ public class Config {
         } catch (SQLException e) {
             System.out.println("Error checking Staff ID: " + e.getMessage());
         }
-            return false; 
+        
+        return false; 
     }
     
      public String getStatus(String appID) {
@@ -231,7 +285,7 @@ public class Config {
         return status;
     }
      
-         public boolean recordExists(String query, String id) {
+    public boolean recordExists(String query, String id) {
         boolean exists = false;
 
         try (Connection conn = connectDB();
@@ -249,6 +303,7 @@ public class Config {
 
         return exists;
     }
+
 
 
 }

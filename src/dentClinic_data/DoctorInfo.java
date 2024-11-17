@@ -155,14 +155,44 @@ public class DoctorInfo {
         conf.updateRecords(update, updfname, updlname, updspecialization, updcontnum, updavailStart, updavailEnd, doctorID);
     }
     
+    
     private void deleteDoctor() {
         Scanner sc = new Scanner(System.in);
-        
-        System.out.print("Enter Doctor ID to delete: ");
-        int id = sc.nextInt();
-        
+
+        String doctorID = "";
+        boolean idExist = false;
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idExist && attempts < maxAttempts) {
+            System.out.print("\nEnter Doctor ID to delete (3 max attempts): ");
+            doctorID = sc.next();
+
+            if (conf.dIDExists(doctorID)) { 
+                idExist = true;
+                System.out.println("Doctor ID found.");
+            } else {
+                attempts++;
+                System.out.println("Invalid ID or ID does not exist.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
+            }
+        }
+
+        if (conf.hasDoctorApp(doctorID)) { 
+            System.out.println("Cannot delete doctor. They have associated appointments.");
+            return;
+        }
+
         String delete = "DELETE FROM tbl_doctors WHERE dID = ?";
-        
-        conf.deleteRecords(delete, id);
+        if (!conf.deleteRecords(delete, doctorID)) {
+            System.out.println("Failed to delete doctor record. Please try again.");
+        } else {
+            System.out.println("Doctor record deleted successfully.");
+        }
     }
+
 }

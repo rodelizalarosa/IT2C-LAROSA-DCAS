@@ -113,7 +113,8 @@ public class PatientInfo {
         int maxAttempts = 3;
 
         while (!idexist && attempts < maxAttempts) {
-            System.out.print("\nEnter Patient ID to update (3 max attempts): ");
+            System.out.print("\n");
+            System.out.print("Enter Patient ID to update (3 max attempts): ");
             patientID = sc.next();
 
             if (conf.pIDExists(patientID)) {
@@ -121,7 +122,7 @@ public class PatientInfo {
                 System.out.println("Patient ID found.");
             } else {
                 attempts++;
-                System.out.println("\tInvalid ID or ID not Existed.");
+                System.out.println("Invalid ID or ID not Existed.");
 
                 if (attempts >= maxAttempts) {
                     System.out.println("Maximum attempts reached. Exiting...");
@@ -163,21 +164,49 @@ public class PatientInfo {
         
         String update = "UPDATE tbl_patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pCONTNUM = ?, pEMAIL = ?, pADDRESS = ?  WHERE pID = ?";
         
-//        Config cnf = new Config();
         conf.updateRecords(update, updfname, updlname, updage, updgen, updcontnum, updemail, upadd, patientID);
     }
     
-    private void deletePatient(){
-        Scanner sc = new Scanner (System.in);
-        
-        System.out.print("Enter Patient ID to delete: ");
-        int id = sc.nextInt();
-        
+    private void deletePatient() {
+        Scanner sc = new Scanner(System.in);
+
+        String patientID = "";
+        boolean idExist = false;
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idExist && attempts < maxAttempts) {
+            System.out.print("\n");
+            System.out.print("Enter Patient ID to delete (3 max attempts): ");
+            patientID = sc.next();
+
+            if (conf.pIDExists(patientID)) { 
+                idExist = true;
+                System.out.println("Patient ID found.");
+            } else {
+                attempts++;
+                System.out.println("Invalid ID or ID does not exist.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return; 
+                }
+            }
+        }
+
+        if (conf.hasPatientApp(patientID)) { 
+            System.out.println("Cannot delete patient. They have existing appointments.");
+            return; 
+        }
+
         String delete = "DELETE FROM tbl_patients WHERE pID = ?";
-        
-//        Config cnf = new Config();
-        conf.deleteRecords(delete, id);
+        if (!conf.deleteRecords(delete, patientID)) {
+            System.out.println("Failed to delete patient record. Please try again.");
+        } else { 
+            System.out.println("Patient record deleted successfully.");
+        }
     }
+ 
 
 }
 

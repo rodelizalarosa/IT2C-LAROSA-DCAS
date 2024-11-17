@@ -154,14 +154,43 @@ public class StaffInfo {
     
     private void deleteStaff() {
         Scanner sc = new Scanner(System.in);
-        
-        System.out.print("Enter Staff ID to delete: ");
-        int id = sc.nextInt();
-        
+
+        String staffID = "";
+        boolean idExist = false;
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (!idExist && attempts < maxAttempts) {
+            System.out.print("\nEnter Staff ID to delete (3 max attempts): ");
+            staffID = sc.next();
+
+            if (conf.sIDExists(staffID)) { 
+                idExist = true;
+                System.out.println("Staff ID found.");
+            } else {
+                attempts++;
+                System.out.println("Invalid ID or ID does not exist.");
+
+                if (attempts >= maxAttempts) {
+                    System.out.println("Maximum attempts reached. Exiting...");
+                    return;
+                }
+            }
+        }
+
+        if (conf.hasStaffApp(staffID)) { 
+            System.out.println("Cannot delete staff. They have associated appointments.");
+            return;
+        }
+
         String delete = "DELETE FROM tbl_staff WHERE sID = ?";
-        
-        conf.deleteRecords(delete, id);
+        if (!conf.deleteRecords(delete, staffID)) {
+            System.out.println("Failed to delete staff record. Please try again.");
+        } else {
+            System.out.println("Staff record deleted successfully.");
+        }
     }
+
 }
     
    
