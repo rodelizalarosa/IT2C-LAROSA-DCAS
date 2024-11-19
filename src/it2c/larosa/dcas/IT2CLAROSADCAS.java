@@ -48,7 +48,7 @@ public class IT2CLAROSADCAS {
                 Appointment.manageAppointments();
             break;
             case 5:
-                AppReport.viewIndvAppointment();
+                AppReport.viewRecords();
             break;
             case 6: 
                 System.out.println("\n\tExiting the program...");
