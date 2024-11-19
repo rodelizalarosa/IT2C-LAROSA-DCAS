@@ -16,15 +16,16 @@ public class IT2CLAROSADCAS {
         
     do {
         System.out.print("\n");
-        System.out.println("Welcome to Dental Clinic Appointment System");
-        System.out.println("---------------------------------------");
-        System.out.println("|    1. MANAGE PATIENT INFORMATION    |");
-        System.out.println("|    2. MANAGE DOCTOR INFORMATION     |");
-        System.out.println("|    3. MANAGE STAFF INFORMATION      |");
-        System.out.println("|    4. APPOINTMENT                   |");
-        System.out.println("|    5. VIEW RECORDS                  |");
-        System.out.println("|    6. EXIT                          |");
-        System.out.println("---------------------------------------");
+        System.out.println("******************************************************");
+        System.out.println("*     Welcome to Dental Clinic Appointment System!   *");
+        System.out.println("*----------------------------------------------------*");
+        System.out.println("*         1. MANAGE PATIENT INFORMATION              *");
+        System.out.println("*         2. MANAGE DOCTOR INFORMATION               *");
+        System.out.println("*         3. MANAGE STAFF INFORMATION                *");
+        System.out.println("*         4. APPOINTMENT                             *");
+        System.out.println("*         5. VIEW RECORDS                            *");
+        System.out.println("*         6. EXIT                                    *");
+        System.out.println("******************************************************");
                 
         System.out.print ("Enter Action: ");
         int act = sc.nextInt();

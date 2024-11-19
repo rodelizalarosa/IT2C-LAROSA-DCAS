@@ -9,20 +9,24 @@ public class Appointment {
 
     private void displayServices() {
         System.out.println("\n");
-        System.out.println("  Available Dental Services:");
-        System.out.println("    1. Cleaning");
-        System.out.println("    2. Filling");
-        System.out.println("    3. Extraction");
-        System.out.println("    4. Root Canal");
-        System.out.println("    5. Orthodontic Treatment");
-        System.out.println("    6. Whitening");
+        System.out.println("----------------------------------");
+        System.out.println("|    Available Dental Services   |");
+        System.out.println("|      1. Cleaning               |");
+        System.out.println("|      2. Filling                |");
+        System.out.println("|      3. Extraction             |");
+        System.out.println("|      4. Root Canal             |");
+        System.out.println("|      5. Orthodontic Treatment  |");
+        System.out.println("|      6. Whitening              |");
+        System.out.println("----------------------------------");
     }
 
     private void displayStatusOptions() {
         System.out.println("\n");
-        System.out.println("Appointment Status Options:");
-        System.out.println("    1. Complete");
-        System.out.println("    2. Cancelled");
+        System.out.println("------------------------------");
+        System.out.println("| Appointment Status Options |");
+        System.out.println("|      1. Complete           |");
+        System.out.println("|      2. Cancelled          |");
+        System.out.println("------------------------------");
     }
 
     public static void manageAppointments() {
@@ -31,15 +35,16 @@ public class Appointment {
 
         do {
             System.out.print("\n");
-            System.out.println("          APPOINTMENTS        ");
-            System.out.println("------------------------------");
-            System.out.println("     1. SCHEDULE APPOINTMENT  ");
-            System.out.println("     2. VIEW APPOINTMENTS     ");
-            System.out.println("     3. EDIT APPOINTMENT      ");
-            System.out.println("     4. UPDATE STATUS         ");
-            System.out.println("     5. DELETE APPOINTMENT    ");
-            System.out.println("     6. EXIT                  ");
-            System.out.println("------------------------------");
+            System.out.println("===================================");
+            System.out.println("            APPOINTMENTS           ");
+            System.out.println("-----------------------------------");
+            System.out.println("       1. SCHEDULE APPOINTMENT     ");
+            System.out.println("       2. VIEW APPOINTMENTS        ");
+            System.out.println("       3. EDIT APPOINTMENT         ");
+            System.out.println("       4. UPDATE STATUS            ");
+            System.out.println("       5. DELETE APPOINTMENT       ");
+            System.out.println("       6. EXIT                     ");
+            System.out.println("===================================");
 
             System.out.print("Enter Option: ");
             int opt = sc.nextInt();

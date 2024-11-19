@@ -16,6 +16,7 @@ public class PatientInfo {
         
         do {
                 System.out.print("\n");
+                System.out.println("===================================");
                 System.out.println("     MANAGE PATIENT INFORMATION    ");
                 System.out.println("-----------------------------------");
                 System.out.println("      1. REGISTER A PATIENT        ");
@@ -23,7 +24,7 @@ public class PatientInfo {
                 System.out.println("      3. EDIT PATIENT RECORD       ");
                 System.out.println("      4. DELETE PATIENT RECORD     ");
                 System.out.println("      5. EXIT                      ");
-                System.out.println("-----------------------------------");
+                System.out.println("===================================");
                 
                 System.out.print ("\nEnter Option: ");
                 int opt = sc.nextInt();
@@ -86,7 +87,7 @@ public class PatientInfo {
         System.out.print("Patient Email: ");
         String email = sc.next();
         System.out.print("Patient Address: ");
-        String address = sc.next();
+        String address = sc.nextLine();
 
         String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -160,7 +161,7 @@ public class PatientInfo {
         String updemail = sc.next();
         
         System.out.print("Enter new Address: ");
-        String upadd = sc.next();
+        String upadd = sc.nextLine();
         
         String update = "UPDATE tbl_patients SET pFNAME = ?, pLNAME = ?, pAGE = ?, pGENDER = ?, pCONTNUM = ?, pEMAIL = ?, pADDRESS = ?  WHERE pID = ?";
         
@@ -195,7 +196,7 @@ public class PatientInfo {
         }
 
         if (conf.hasPatientApp(patientID)) { 
-            System.out.println("Cannot delete patient. They have existing appointments.");
+            System.out.println("Cannot delete patient record. They have existing appointments.");
             return; 
         }
 

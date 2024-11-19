@@ -15,6 +15,7 @@ public class StaffInfo {
         
         do {
             System.out.print("\n");
+            System.out.println("===================================");
             System.out.println("     MANAGE STAFF INFORMATION     ");
             System.out.println("-----------------------------------");
             System.out.println("     1. REGISTER A STAFF           ");
@@ -22,7 +23,7 @@ public class StaffInfo {
             System.out.println("     3. EDIT STAFF RECORD          ");
             System.out.println("     4. DELETE STAFF RECORD        ");
             System.out.println("     5. EXIT                       ");
-            System.out.println("-----------------------------------");
+            System.out.println("===================================");
 
             System.out.print("\nEnter Option: ");
             int opt = sc.nextInt();
@@ -101,16 +102,16 @@ public class StaffInfo {
     private void updateStaff() {
         Scanner sc = new Scanner(System.in);
         
-        String stID = "";
+        String staffID = "";
         boolean idexist = false;
         int attempts = 0;
         int maxAttempts = 3;
 
         while (!idexist && attempts < maxAttempts) {
             System.out.print("\nEnter Staff ID to update (3 max attempts): ");
-            stID = sc.next();
+            staffID = sc.next();
 
-            if (conf.sIDExists(stID)) {
+            if (conf.sIDExists(staffID)) {
                 idexist = true;
                 System.out.println("Staff ID found.");
             } else {
@@ -149,7 +150,7 @@ public class StaffInfo {
         
         String update = "UPDATE tbl_staff SET sFNAME = ?, sLNAME = ?, sROLE = ?, sCONTNUM = ? WHERE sID = ?";
 
-        conf.updateRecords(update, updfname, updlname, updrole, updcontnum, stID);
+        conf.updateRecords(update, updfname, updlname, updrole, updcontnum, staffID);
     }
     
     private void deleteStaff() {

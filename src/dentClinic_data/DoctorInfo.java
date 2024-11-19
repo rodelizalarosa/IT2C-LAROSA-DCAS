@@ -14,6 +14,7 @@ public class DoctorInfo {
         
         do { 
             System.out.print("\n");
+            System.out.println("===================================");
             System.out.println("      MANAGE DOCTOR INFORMATION    ");
             System.out.println("-----------------------------------");
             System.out.println("      1. REGISTER A DOCTOR         ");
@@ -21,7 +22,7 @@ public class DoctorInfo {
             System.out.println("      3. EDIT DOCTOR RECORD        ");
             System.out.println("      4. DELETE DOCTOR RECORD      ");
             System.out.println("      5. EXIT                      ");
-            System.out.println("-----------------------------------");
+            System.out.println("===================================");
 
             System.out.print("\nEnter Option: ");
             int opt = sc.nextInt();

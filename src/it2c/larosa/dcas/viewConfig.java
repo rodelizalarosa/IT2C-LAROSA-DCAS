@@ -1,10 +1,12 @@
 package it2c.larosa.dcas;
 
+import static it2c.larosa.dcas.Config.connectDB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class viewConfig {
     
@@ -266,4 +268,12 @@ public class viewConfig {
             System.out.println("Error retrieving records: " + e.getMessage());
         }
     }
+    
+    public ResultSet executeQuery(String query) throws SQLException {
+            Config conf = new Config();
+            Connection conn = conf.connectDB(); // Assuming conf.getConnection() returns a valid DB connection
+            Statement stmt = conn.createStatement();
+            return stmt.executeQuery(query);
+        }
+
 }
