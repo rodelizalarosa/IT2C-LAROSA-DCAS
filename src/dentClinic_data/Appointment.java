@@ -284,7 +284,8 @@ public class Appointment {
             System.out.println("Maximum attempts reached. Exiting...");
             return;
         }
-
+        
+        viewDentist();
         String doctorID;
         do {
             System.out.print("Enter new Doctor ID: ");
@@ -295,7 +296,8 @@ public class Appointment {
                 System.out.println("Invalid Doctor ID. Please try again.");
             }
         } while (true);
-
+        
+        viewPatients();
         String patientID;
         do {
             System.out.print("Enter new Patient ID: ");
@@ -307,6 +309,7 @@ public class Appointment {
             }
         } while (true);
 
+        viewStaffs();
         String staffID;
         do {
             System.out.print("Enter new Staff ID: ");

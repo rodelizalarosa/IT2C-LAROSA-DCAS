@@ -51,7 +51,7 @@ public class IT2CLAROSADCAS {
                 AppReport.viewRecords();
             break;
             case 6: 
-                System.out.println("\n\tExiting the program...");
+                System.out.println("\nThank You for using Dental Clinic Appointment System!");
                 System.exit(0);
             break;
         }

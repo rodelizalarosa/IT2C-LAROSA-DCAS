@@ -494,60 +494,60 @@ public class AppReport {
     }
     
    private void viewSpecificAppointment(String appID) {
-        
-       String sqlQuery = "SELECT a.appID, a.appDATE, a.appTIME, a.appService, a.status,"
-                + " d.dID AS doctorID, CONCAT(d.dFNAME, ' ', d.dLNAME) AS doctorName,"
-                + " s.sID AS staffID, CONCAT(s.sFNAME, ' ', s.sLNAME) AS staffName,"
-                + " p.pID AS patientID, p.pFNAME, p.pLNAME"
-                + " FROM tbl_appointments a\n" 
-                + " LEFT JOIN tbl_doctors d ON a.doctorID = d.dID"
-                + " LEFT JOIN tbl_staff s ON a.staffID = s.sID"
-                + "  LEFT JOIN tbl_patients p ON a.patientID = p.pID"
-                + " WHERE a.appID = ?";
+    String sqlQuery = "SELECT a.appID, a.appDATE, a.appTIME, a.appService, a.status, " +
+                      "d.dID AS doctorID, (d.dFNAME || ' ' || d.dLNAME) AS doctorName, " +
+                      "s.sID AS staffID, (s.sFNAME || ' ' || s.sLNAME) AS staffName, " +
+                      "p.pID AS patientID, p.pFNAME, p.pLNAME " +
+                      "FROM tbl_appointments a " +
+                      "LEFT JOIN tbl_doctors d ON a.doctorID = d.dID " +
+                      "LEFT JOIN tbl_staff s ON a.staffID = s.sID " +
+                      "LEFT JOIN tbl_patients p ON a.patientID = p.pID " +
+                      "WHERE a.appID = ?";
 
-        try (Connection conn = conf.connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
+    try (Connection conn = conf.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
 
-            pstmt.setString(1, appID);
-            ResultSet rs = pstmt.executeQuery();
+        pstmt.setString(1, appID);
+        ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) {
-                String doctorID = rs.getString("doctorID");
-                String doctorName = rs.getString("doctorName");
-                String staffID = rs.getString("staffID");
-                String staffName = rs.getString("staffName");
-                String patientID = rs.getString("patientID");
-                String patientFirstName = rs.getString("pFNAME");
-                String patientLastName = rs.getString("pLNAME");
-                String appointmentID = rs.getString("appID");
-                String services = rs.getString("appService");
-                String date = rs.getString("appDATE");
-                String time = rs.getString("appTIME");
-                String status = rs.getString("status");
+        if (rs.next()) {
+            String doctorID = rs.getString("doctorID");
+            String doctorName = rs.getString("doctorName") != null ? rs.getString("doctorName") : "N/A";
+            String staffID = rs.getString("staffID");
+            String staffName = rs.getString("staffName") != null ? rs.getString("staffName") : "N/A";
+            String patientID = rs.getString("patientID");
+            String patientFirstName = rs.getString("pFNAME");
+            String patientLastName = rs.getString("pLNAME");
+            String appointmentID = rs.getString("appID");
+            String services = rs.getString("appService");
+            String date = rs.getString("appDATE");
+            String time = rs.getString("appTIME");
+            String status = rs.getString("status");
 
-                System.out.println("\n");
-                System.out.println("*********************************************************************************");
-                System.out.println("*                               INDIVIDUAL APPOINTMENT                          *");
-                System.out.println("*********************************************************************************");
-                System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Doctor ID", doctorID, "Attending Doctor", doctorName);
-                System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Staff ID", staffID, "Assigned Staff", staffName);
-                System.out.println("=================================================================================");
-                System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", patientID, "First Name", patientFirstName);
-                System.out.printf("%-20s: %-30s%n", "Last Name", patientLastName);
-                System.out.println("---------------------------------------------------------------------------------");
-                System.out.printf("%-20s: %-30s%n", "Appointment ID", appointmentID);
-                System.out.printf("%-20s: %-30s%n", "Dental Services", services);
-                System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Date", date, "Time", time);
-                System.out.printf("%-20s: %-30s%n", "Status", status);
-                System.out.println("*********************************************************************************");
-            } else {
-                System.out.println("No record found for Appointment ID: " + appID);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error retrieving appointment data: " + e.getMessage());
+            System.out.println("\n");
+            System.out.println("*********************************************************************************");
+            System.out.println("*                               INDIVIDUAL APPOINTMENT                          *");
+            System.out.println("*********************************************************************************");
+            System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Doctor ID", doctorID, "Attending Doctor", doctorName);
+            System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Staff ID", staffID, "Assigned Staff", staffName);
+            System.out.println("=================================================================================");
+            System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", patientID, "First Name", patientFirstName);
+            System.out.printf("%-20s: %-30s%n", "Last Name", patientLastName);
+            System.out.println("---------------------------------------------------------------------------------");
+            System.out.printf("%-20s: %-30s%n", "Appointment ID", appointmentID);
+            System.out.printf("%-20s: %-30s%n", "Dental Services", services);
+            System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Date", date, "Time", time);
+            System.out.printf("%-20s: %-30s%n", "Status", status);
+            System.out.println("*********************************************************************************");
+        } else {
+            System.out.println("No record found for Appointment ID: " + appID);
         }
+
+    } catch (SQLException e) {
+        System.out.println("Error retrieving appointment data: " + e.getMessage());
     }
+}
+
 
 
 }
