@@ -61,6 +61,7 @@ public class AppReport {
     public static void viewRecords(){
         
         Scanner sc = new Scanner (System.in);
+        Config conf = new Config();
         boolean response = true;
         
         do {
@@ -76,11 +77,7 @@ public class AppReport {
                 System.out.println("===================================");
                 
                 System.out.print ("\nEnter Option: ");
-                int opt = sc.nextInt();
-                    while (opt < 1 ||  opt > 5){
-                       System.out.print("\tInvalid Input, Try Again: ");
-                          opt = sc.nextInt();
-                    }   
+                int opt = conf.validateChoice();
                     
                     AppReport appR = new AppReport ();
                 switch (opt){
@@ -171,17 +168,37 @@ public class AppReport {
     }
     
     public void viewAppointmentOnly() {
-        String rodequery = "SELECT a.appID, p.pFNAME, p.pLNAME" +
-                       "FROM tbl_appointments a " +
-                       "INNER JOIN tbl_patients p ON a.patientID = p.pID";
+   
+        String rodequery = "SELECT a.appID, p.pFNAME, p.pLNAME " +
+                           "FROM tbl_appointments a " +
+                           "INNER JOIN tbl_patients p ON a.patientID = p.pID";
         String[] rodeheaders = {"Appointment ID", "Patient First Name", "Patient Last Name"};
         String[] rodecolumns = {"appID", "pFNAME", "pLNAME"};
-        
+
         vcnf.viewOnlyAppointment(rodequery, rodeheaders, rodecolumns);
     }
+    
+    private void viewAssociatedAppointments(String id, String type) {
+        String query = "";
+        String[] rodeheaders = {"Appointment ID", "Patient ID", "Doctor ID", "Staff ID", "Date", "Time", "Service", "Status"};
+        String[] rodecolumns = {"appID", "patientID", "doctorID", "staffID", "appDATE", "appTIME", "appService", "status"};
 
-    
-    
+        switch (type) {
+            case "doctor":
+                query = "SELECT * FROM tbl_appointments WHERE doctorID = " + id;
+                break;
+            case "staff":
+                query = "SELECT * FROM tbl_appointments WHERE staffID = " + id;
+                break;
+            default:
+                System.out.println("Invalid type for viewing appointments.");
+                return;
+        }
+
+        System.out.println("\nAssociated Appointments:");
+        vcnf.viewAppointment(query, rodeheaders, rodecolumns);
+    }
+
     public void patientRecord() {
         Scanner sc = new Scanner(System.in);
 
@@ -223,9 +240,17 @@ public class AppReport {
 
                     viewSpecificPatient(patientID);
    
-                    System.out.print("\nDo you want to view another patient? (yes/no): ");
-                    String response = sc.next().trim().toLowerCase();
-                    continueViewing = response.equals("yes");
+                     String response;
+                        do {
+                            System.out.print("\nDo you want to view another patient? (yes/no): ");
+                            response = sc.next().trim().toLowerCase();
+
+                            if (!response.equals("yes") && !response.equals("no")) {
+                                System.out.println("\tInvalid input: Please enter 'yes' or 'no'. Try again.");
+                            }
+                        } while (!response.equals("yes") && !response.equals("no"));
+
+                        continueViewing = response.equals("yes");
 
                 } while (continueViewing);
 
@@ -404,11 +429,9 @@ public class AppReport {
 
     
     private void viewSpecificPatient(String patientID) {
-    
-    String query = "SELECT * FROM tbl_patients WHERE pID = " + patientID;
-    
-        try {
+        String query = "SELECT * FROM tbl_patients WHERE pID = " + patientID;
 
+        try {
             ResultSet rs = vcnf.executeQuery(query);
 
             if (rs.next()) {
@@ -427,16 +450,26 @@ public class AppReport {
                 System.out.println("==============================================");
             } else {
                 System.out.println("No patient found with ID: " + patientID);
+                return; 
             }
 
             rs.close();
+   
+            Scanner sc = new Scanner(System.in);
+            System.out.print("\nDo you want to view all previous appointments for this patient? (yes/no): ");
+            String response = sc.next().trim().toLowerCase();
+
+            if (response.equals("yes")) {
+                viewAssociatedAppointments(patientID, "patient");
+            }
+
         } catch (SQLException e) {
             System.out.println("Error fetching patient record: " + e.getMessage());
         }
     }
 
+
     private void viewSpecificDoctor(String doctorID) {
-    
         String query = "SELECT * FROM tbl_doctors WHERE dID = " + doctorID;
 
         try {
@@ -457,16 +490,26 @@ public class AppReport {
                 System.out.println("==============================================");
             } else {
                 System.out.println("No doctor found with ID: " + doctorID);
+                return; 
             }
 
             rs.close();
+
+            Scanner sc = new Scanner(System.in);
+            System.out.print("\nDo you want to view all appointments for this doctor? (yes/no): ");
+            String response = sc.next().trim().toLowerCase();
+
+            if (response.equals("yes")) {
+                viewAssociatedAppointments(doctorID, "doctor");
+            }
+
         } catch (SQLException e) {
             System.out.println("Error fetching doctor record: " + e.getMessage());
         }
     }
+
     
     private void viewSpecificStaff(String staffID) {
-        
         String query = "SELECT * FROM tbl_staff WHERE sID = " + staffID;
 
         try {
@@ -485,13 +528,24 @@ public class AppReport {
                 System.out.println("==============================================");
             } else {
                 System.out.println("No staff member found with ID: " + staffID);
+                return;
             }
 
             rs.close();
+
+            Scanner sc = new Scanner(System.in);
+            System.out.print("\nDo you want to view all appointments for this staff member? (yes/no): ");
+            String response = sc.next().trim().toLowerCase();
+
+            if (response.equals("yes")) {
+                viewAssociatedAppointments(staffID, "staff");
+            }
+
         } catch (SQLException e) {
             System.out.println("Error fetching staff record: " + e.getMessage());
         }
     }
+
     
    private void viewSpecificAppointment(String appID) {
     String sqlQuery = "SELECT a.appID, a.appDATE, a.appTIME, a.appService, a.status, " +
@@ -525,20 +579,20 @@ public class AppReport {
             String status = rs.getString("status");
 
             System.out.println("\n");
-            System.out.println("*********************************************************************************");
-            System.out.println("*                               INDIVIDUAL APPOINTMENT                          *");
-            System.out.println("*********************************************************************************");
+            System.out.println("******************************************************************************************");
+            System.out.println("*                               INDIVIDUAL APPOINTMENT                                   *");
+            System.out.println("******************************************************************************************");
             System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Doctor ID", doctorID, "Attending Doctor", doctorName);
             System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Staff ID", staffID, "Assigned Staff", staffName);
-            System.out.println("=================================================================================");
+            System.out.println("==========================================================================================");
             System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", patientID, "First Name", patientFirstName);
             System.out.printf("%-20s: %-30s%n", "Last Name", patientLastName);
-            System.out.println("---------------------------------------------------------------------------------");
+            System.out.println("------------------------------------------------------------------------------------------");
             System.out.printf("%-20s: %-30s%n", "Appointment ID", appointmentID);
             System.out.printf("%-20s: %-30s%n", "Dental Services", services);
-            System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Date", date, "Time", time);
+            System.out.printf("%-20s: %-30s %-20s: %-10s%n", "Date", date, "Time", time);
             System.out.printf("%-20s: %-30s%n", "Status", status);
-            System.out.println("*********************************************************************************");
+            System.out.println("******************************************************************************************");
         } else {
             System.out.println("No record found for Appointment ID: " + appID);
         }

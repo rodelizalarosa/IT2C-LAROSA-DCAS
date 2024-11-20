@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Config {
     
@@ -21,7 +23,51 @@ public class Config {
         return con;
     }
       
-        
+    public int validateChoiceMain() {
+        Scanner sc = new Scanner(System.in);
+        int getNum;
+
+        while (true) {
+            try {
+                getNum = sc.nextInt();
+
+                if (getNum < 1 || getNum > 6) {
+                    System.out.print("\tInvalid Input: Please enter a number between 1 and 6. Try again: ");
+                    continue; 
+                }
+                break; 
+
+            } catch (InputMismatchException e) {
+                System.out.print("\tInvalid Input: Must only be a number, try again: ");
+                sc.next(); 
+            }
+        }
+        return getNum;
+    }
+    
+    public int validateChoice() {
+        Scanner sc = new Scanner(System.in);
+        int getNum;
+
+        while (true) {
+            try {
+                getNum = sc.nextInt();
+
+                if (getNum < 1 || getNum > 5) {
+                    System.out.print("\tInvalid Input: Please enter a number between 1 and 5. Try again: ");
+                    continue; 
+                }
+                break; 
+
+            } catch (InputMismatchException e) {
+                System.out.print("\tInvalid Input: Must only be a number, try again: ");
+                sc.next(); 
+            }
+        }
+        return getNum;
+    }
+
+    
     public void addRecords(String sql, Object... values) {
         try (Connection conn = this.connectDB(); // Use the connectDB method
              PreparedStatement prstmt = conn.prepareStatement(sql)) {

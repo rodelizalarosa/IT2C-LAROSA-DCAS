@@ -12,6 +12,7 @@ public class IT2CLAROSADCAS {
     public static void main(String[] args) {
        
         Scanner sc = new Scanner (System.in);
+        Config conf = new Config();
         String response;
         
     do {
@@ -28,11 +29,7 @@ public class IT2CLAROSADCAS {
         System.out.println("******************************************************");
                 
         System.out.print ("Enter Action: ");
-        int act = sc.nextInt();
-            while (act < 1 || act > 6){
-                System.out.print("Invalid Input, Try Again: ");
-                act = sc.nextInt();
-            }
+        int act = conf.validateChoiceMain();
                                       
         switch (act){
             case 1:
@@ -60,7 +57,7 @@ public class IT2CLAROSADCAS {
         response = sc.next();
                 
     } while(response.equalsIgnoreCase("yes") && response.equalsIgnoreCase("Yes") );
-        System.out.println("\n\tThank you, See you! ");
+        System.out.println("\nThank You for using Dental Clinic Appointment System!");
     
     }  
 

@@ -11,6 +11,8 @@ public class PatientInfo {
         Config conf = new Config();
         
     public static void managePatients(){
+        
+        Config conf = new Config();
         Scanner sc = new Scanner (System.in);
         boolean response = true;
         
@@ -27,11 +29,7 @@ public class PatientInfo {
                 System.out.println("===================================");
                 
                 System.out.print ("\nEnter Option: ");
-                int opt = sc.nextInt();
-                    while (opt < 1 ||  opt > 5){
-                       System.out.print("\tInvalid Input, Try Again: ");
-                          opt = sc.nextInt();
-                    }   
+                int opt = conf.validateChoice();  
                     
                     PatientInfo pINFO = new PatientInfo();
                 switch (opt){
@@ -61,7 +59,6 @@ public class PatientInfo {
     
     public void addPatients(){
         Scanner sc = new Scanner(System.in);
-//        Config conf = new Config();
         
         System.out.print("\n");
         System.out.print("Patient First Name: ");

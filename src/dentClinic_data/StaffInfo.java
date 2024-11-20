@@ -8,8 +8,10 @@ import java.util.Scanner;
 public class StaffInfo {
         
         Config conf = new Config();
+        
     public static void manageStaffs (){
         
+        Config conf = new Config();
         Scanner sc = new Scanner (System.in);
         boolean response = true;
         
@@ -26,12 +28,7 @@ public class StaffInfo {
             System.out.println("===================================");
 
             System.out.print("\nEnter Option: ");
-            int opt = sc.nextInt();
-
-            while (opt < 1 || opt > 5) {
-                System.out.print("\tInvalid Input, Try Again: ");
-                opt = sc.nextInt();
-            }
+            int opt = conf.validateChoice();
             
             StaffInfo sINFO = new StaffInfo();
         switch (opt) {

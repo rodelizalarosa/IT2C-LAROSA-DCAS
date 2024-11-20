@@ -9,6 +9,8 @@ public class DoctorInfo {
     
         Config conf = new Config();
     public static void manageDoctors() {
+        
+        Config conf = new Config();
         Scanner sc = new Scanner(System.in);
         boolean response = true;
         
@@ -25,7 +27,7 @@ public class DoctorInfo {
             System.out.println("===================================");
 
             System.out.print("\nEnter Option: ");
-            int opt = sc.nextInt();
+            int opt = conf.validateChoice();
 
             while (opt < 1 || opt > 5) {
                 System.out.print("\tInvalid Input, Try Again: ");

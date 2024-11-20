@@ -30,6 +30,8 @@ public class Appointment {
     }
 
     public static void manageAppointments() {
+        
+        Config conf = new Config();
         Scanner sc = new Scanner(System.in);
         boolean response = true;
 
@@ -47,7 +49,7 @@ public class Appointment {
             System.out.println("===================================");
 
             System.out.print("Enter Option: ");
-            int opt = sc.nextInt();
+            int opt = conf.validateChoice();
 
             Appointment app = new Appointment();
             switch (opt) {
