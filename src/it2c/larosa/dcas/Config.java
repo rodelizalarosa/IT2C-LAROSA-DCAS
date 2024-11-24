@@ -22,7 +22,8 @@ public class Config {
         }
         return con;
     }
-      
+    
+    //VALIDATION FOR MAIN MENU
     public int validateChoiceMain() {
         Scanner sc = new Scanner(System.in);
         int getNum;
@@ -31,7 +32,7 @@ public class Config {
             try {
                 getNum = sc.nextInt();
 
-                if (getNum < 1 || getNum > 6) {
+                if (getNum < 1 || getNum > 6) { 
                     System.out.print("\tInvalid Input: Please enter a number between 1 and 6. Try again: ");
                     continue; 
                 }
@@ -45,6 +46,7 @@ public class Config {
         return getNum;
     }
     
+    //VALIDATION FOR INDEPENDENT DATA
     public int validateChoice() {
         Scanner sc = new Scanner(System.in);
         int getNum;
@@ -103,7 +105,6 @@ public class Config {
         }
     }    
     
-    // Dynamic view method to display records from any table
     public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
         // Check that columnHeaders and columnNames arrays are the same length
         if (columnHeaders.length != columnNames.length) {

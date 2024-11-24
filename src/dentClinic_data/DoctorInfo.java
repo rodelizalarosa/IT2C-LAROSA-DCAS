@@ -28,11 +28,6 @@ public class DoctorInfo {
 
             System.out.print("\nEnter Option: ");
             int opt = conf.validateChoice();
-
-            while (opt < 1 || opt > 5) {
-                System.out.print("\tInvalid Input, Try Again: ");
-                opt = sc.nextInt();
-            }
         
                 DoctorInfo dINFO = new DoctorInfo();
         switch (opt) {

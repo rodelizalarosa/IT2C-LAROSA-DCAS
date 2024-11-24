@@ -30,10 +30,9 @@ public class Appointment {
     }
 
     public static void manageAppointments() {
-        
         Config conf = new Config();
         Scanner sc = new Scanner(System.in);
-        boolean response = true;
+        boolean response = true; // Controls the loop
 
         do {
             System.out.print("\n");
@@ -49,10 +48,10 @@ public class Appointment {
             System.out.println("===================================");
 
             System.out.print("Enter Option: ");
-            int opt = conf.validateChoice();
+            int act = conf.validateChoiceMain(); // Ensure valid input
 
             Appointment app = new Appointment();
-            switch (opt) {
+            switch (act) {
                 case 1:
                     app.scheduleAppointment();
                     break;
@@ -68,17 +67,15 @@ public class Appointment {
                 case 5:
                     app.deleteAppointment();
                     break;
-                case 6: 
-                    response = false;
+                case 6:
                     System.out.println("Exiting Schedule an Appointment...");
+                    response = false; // Exit the loop
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-
         } while (response);
     }
-    
     
     private void viewDentist() {
         String rodeQuery = "SELECT dID, dFNAME, dLNAME, dSPECIALIZATION  FROM tbl_doctors";

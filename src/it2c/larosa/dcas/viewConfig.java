@@ -231,9 +231,7 @@ public class viewConfig {
             System.out.println("Error retrieving records: " + e.getMessage());
         }
     }
-    
-    
-    
+        
     // VIEW AN APPOINTMENT
     public void viewAppointment(String sqlQuery, String[] columnHeaders, String[] columnNames) {
         if (columnHeaders.length != columnNames.length) {

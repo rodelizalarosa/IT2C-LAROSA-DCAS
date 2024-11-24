@@ -7,6 +7,7 @@ import dentClinic_data.Appointment;
 import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +18,18 @@ public class AppReport {
         Config conf = new Config();
         viewConfig vcnf = new viewConfig();
     
+    public static Connection connectDB() {
+        Connection con = null;
+        try {
+            Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
+            con = DriverManager.getConnection("jdbc:sqlite:rode.db"); // Establish connection
+            System.out.println("\t\n(Connection Successful!)");
+        } catch (Exception e) {
+            System.out.println("\t\nConnection Failed: " + e);
+        }
+        return con;
+    }
+        
     private void displayPatientOpt() {
         System.out.println("\n");
         System.out.println("----------------------------------");
@@ -239,18 +252,32 @@ public class AppReport {
                     }
 
                     viewSpecificPatient(patientID);
-   
-                     String response;
-                        do {
-                            System.out.print("\nDo you want to view another patient? (yes/no): ");
-                            response = sc.next().trim().toLowerCase();
 
-                            if (!response.equals("yes") && !response.equals("no")) {
-                                System.out.println("\tInvalid input: Please enter 'yes' or 'no'. Try again.");
-                            }
-                        } while (!response.equals("yes") && !response.equals("no"));
+                    String appointmentResponse;
+                    do {
+                        System.out.print("\nDo you want to view all appointments for this patient? (yes/no): ");
+                        appointmentResponse = sc.next().trim().toLowerCase();
 
-                        continueViewing = response.equals("yes");
+                        if (!appointmentResponse.equals("yes") && !appointmentResponse.equals("no")) {
+                            System.out.println("\tInvalid input: Please enter 'yes' or 'no'. Try again.");
+                        }
+                    } while (!appointmentResponse.equals("yes") && !appointmentResponse.equals("no"));
+
+                    if (appointmentResponse.equals("yes")) {
+                        viewPatientAppointments(patientID); 
+                    }
+
+                    String response;
+                    do {
+                        System.out.print("\nDo you want to view another patient? (yes/no): ");
+                        response = sc.next().trim().toLowerCase();
+
+                        if (!response.equals("yes") && !response.equals("no")) {
+                            System.out.println("\tInvalid input: Please enter 'yes' or 'no'. Try again.");
+                        }
+                    } while (!response.equals("yes") && !response.equals("no"));
+
+                    continueViewing = response.equals("yes");
 
                 } while (continueViewing);
 
@@ -261,6 +288,7 @@ public class AppReport {
                 break;
         }
     }
+
 
     
     public void doctorRecord() {
@@ -465,6 +493,73 @@ public class AppReport {
 
         } catch (SQLException e) {
             System.out.println("Error fetching patient record: " + e.getMessage());
+        }
+    }
+    
+    public void viewPatientAppointments(String patientID) {
+        try (Connection conn = this.connectDB()) {
+            String query = "SELECT " +
+                           " p.pID AS patient_id, " +
+                           " p.pFNAME AS patientFirstName, " +
+                           " p.pLNAME AS patientLastName, " +
+                           " a.appID AS appointment_id, " +
+                           " a.doctorID AS doctor_id, " +
+                           " (d.dLNAME || ', ' || d.dFNAME) AS doctorFullName, " +
+                           " a.staffID AS staff_id, " +
+                           " (s.sLNAME || ', ' || s.sFNAME) AS staffFullName, " +
+                           " a.appService AS dental_service, " +
+                           " a.appDATE AS appointment_date, " +
+                           " a.appTIME AS appointment_time, " +
+                           " a.status AS status " +
+                           "FROM tbl_patients p " +
+                           "LEFT JOIN tbl_appointments a ON p.pID = a.patientID " +
+                           "LEFT JOIN tbl_doctors d ON a.doctorID = d.dID " +
+                           "LEFT JOIN tbl_staff s ON a.staffID = s.sID " +
+                           "WHERE p.pID = ?";
+
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, patientID);
+                ResultSet rs = pstmt.executeQuery();
+
+                if (!rs.isBeforeFirst()) { // Check if the result set is empty
+                    System.out.println("No appointments found for Patient ID: " + patientID);
+                    return;
+                }
+
+                boolean headerDisplayed = false;
+
+                while (rs.next()) {
+                    if (!headerDisplayed) {
+                        System.out.println("\n******************************************************************************************");
+                        System.out.println("*                               PATIENT APPOINTMENTS                                   *");
+                        System.out.println("******************************************************************************************");
+                        System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", rs.getString("patient_id"), "First Name", rs.getString("patientFirstName"));
+                        System.out.printf("%-20s: %-30s%n", "Last Name", rs.getString("patientLastName"));
+                        System.out.println("------------------------------------------------------------------------------------------");
+                        headerDisplayed = true;
+
+                        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                        System.out.println("| Appointment ID       | Doctor ID           | Doctor Full Name     | Staff ID            | Staff Full Name       | Dental Services      | Date                 | Time                 | Status              |");
+                        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    }
+
+                    System.out.printf("| %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s |%n",
+                            rs.getString("appointment_id"),
+                            rs.getString("doctor_id"),
+                            rs.getString("doctorFullName") != null ? rs.getString("doctorFullName") : "N/A",
+                            rs.getString("staff_id") != null ? rs.getString("staff_id") : "N/A",
+                            rs.getString("staffFullName") != null ? rs.getString("staffFullName") : "N/A",
+                            rs.getString("dental_service") != null ? rs.getString("dental_service") : "N/A",
+                            rs.getString("appointment_date") != null ? rs.getString("appointment_date") : "N/A",
+                            rs.getString("appointment_time") != null ? rs.getString("appointment_time") : "N/A",
+                            rs.getString("status") != null ? rs.getString("status") : "N/A"
+                    );
+                }
+
+                System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving patient appointments: " + e.getMessage());
         }
     }
 
