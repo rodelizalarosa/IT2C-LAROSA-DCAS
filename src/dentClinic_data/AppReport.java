@@ -482,14 +482,6 @@ public class AppReport {
             }
 
             rs.close();
-   
-            Scanner sc = new Scanner(System.in);
-            System.out.print("\nDo you want to view all previous appointments for this patient? (yes/no): ");
-            String response = sc.next().trim().toLowerCase();
-
-            if (response.equals("yes")) {
-                viewAssociatedAppointments(patientID, "patient");
-            }
 
         } catch (SQLException e) {
             System.out.println("Error fetching patient record: " + e.getMessage());
@@ -498,71 +490,76 @@ public class AppReport {
     
     public void viewPatientAppointments(String patientID) {
         try (Connection conn = this.connectDB()) {
-            String query = "SELECT " +
-                           " p.pID AS patient_id, " +
-                           " p.pFNAME AS patientFirstName, " +
-                           " p.pLNAME AS patientLastName, " +
-                           " a.appID AS appointment_id, " +
-                           " a.doctorID AS doctor_id, " +
-                           " (d.dLNAME || ', ' || d.dFNAME) AS doctorFullName, " +
-                           " a.staffID AS staff_id, " +
-                           " (s.sLNAME || ', ' || s.sFNAME) AS staffFullName, " +
-                           " a.appService AS dental_service, " +
-                           " a.appDATE AS appointment_date, " +
-                           " a.appTIME AS appointment_time, " +
-                           " a.status AS status " +
-                           "FROM tbl_patients p " +
-                           "LEFT JOIN tbl_appointments a ON p.pID = a.patientID " +
-                           "LEFT JOIN tbl_doctors d ON a.doctorID = d.dID " +
-                           "LEFT JOIN tbl_staff s ON a.staffID = s.sID " +
-                           "WHERE p.pID = ?";
+            // Query to get the patient's basic details
+            String patientInfoQuery = "SELECT pFNAME, pLNAME FROM tbl_patients WHERE pID = ?";
+            try (PreparedStatement pstmtPatient = conn.prepareStatement(patientInfoQuery)) {
+                pstmtPatient.setString(1, patientID);
+                ResultSet patientRs = pstmtPatient.executeQuery();
 
-            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-                pstmt.setString(1, patientID);
-                ResultSet rs = pstmt.executeQuery();
-
-                if (!rs.isBeforeFirst()) { // Check if the result set is empty
-                    System.out.println("No appointments found for Patient ID: " + patientID);
+                // Check if the patient exists
+                if (!patientRs.next()) {
+                    System.out.println("\n* Patient ID not found in the database. *");
                     return;
                 }
+                
+                String patientFirstName = patientRs.getString("pFNAME");
+                String patientLastName = patientRs.getString("pLNAME");
+               
+                String query = "SELECT " +
+                               " a.appID AS appointment_id, " +
+                               " a.doctorID AS doctor_id, " +
+                               " (d.dLNAME || ', ' || d.dFNAME) AS doctorFullName, " +
+                               " a.staffID AS staff_id, " +
+                               " (s.sLNAME || ', ' || s.sFNAME) AS staffFullName, " +
+                               " a.appService AS dental_service, " +
+                               " a.appDATE AS appointment_date, " +
+                               " a.appTIME AS appointment_time, " +
+                               " a.status AS status " +
+                               "FROM tbl_appointments a " +
+                               "LEFT JOIN tbl_doctors d ON a.doctorID = d.dID " +
+                               "LEFT JOIN tbl_staff s ON a.staffID = s.sID " +
+                               "WHERE a.patientID = ?";
 
-                boolean headerDisplayed = false;
+                try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                    pstmt.setString(1, patientID);
+                    ResultSet rs = pstmt.executeQuery();        
+                  
+                    System.out.println("\n******************************************************************************************");
+                    System.out.println("*                               PATIENT APPOINTMENTS                                      *");
+                    System.out.println("*******************************************************************************************");
+                    System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", patientID, "First Name", patientFirstName);
+                    System.out.printf("%-20s: %-30s%n", "Last Name", patientLastName);
+                    System.out.println("------------------------------------------------------------------------------------------");
 
-                while (rs.next()) {
-                    if (!headerDisplayed) {
-                        System.out.println("\n******************************************************************************************");
-                        System.out.println("*                               PATIENT APPOINTMENTS                                   *");
-                        System.out.println("******************************************************************************************");
-                        System.out.printf("%-20s: %-30s %-20s: %-30s%n", "Patient ID", rs.getString("patient_id"), "First Name", rs.getString("patientFirstName"));
-                        System.out.printf("%-20s: %-30s%n", "Last Name", rs.getString("patientLastName"));
-                        System.out.println("------------------------------------------------------------------------------------------");
-                        headerDisplayed = true;
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("| Appointment ID       | Doctor ID           | Doctor Full Name     | Staff ID            | Staff Full Name       | Dental Services      | Date                 | Time                 | Status              |");
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-                        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-                        System.out.println("| Appointment ID       | Doctor ID           | Doctor Full Name     | Staff ID            | Staff Full Name       | Dental Services      | Date                 | Time                 | Status              |");
-                        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    if (!rs.isBeforeFirst()) {
+                            System.out.printf("| %-200s |%n",
+                            String.format("%-50s * %s, %s does not have any appointment. Schedule an appointment first. *", "", patientLastName, patientFirstName));
+                    } else {                 
+                        while (rs.next()) {
+                            System.out.printf("| %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s |%n",
+                                    rs.getString("appointment_id"),
+                                    rs.getString("doctor_id"),
+                                    rs.getString("doctorFullName") != null ? rs.getString("doctorFullName") : "N/A",
+                                    rs.getString("staff_id") != null ? rs.getString("staff_id") : "N/A",
+                                    rs.getString("staffFullName") != null ? rs.getString("staffFullName") : "N/A",
+                                    rs.getString("dental_service") != null ? rs.getString("dental_service") : "N/A",
+                                    rs.getString("appointment_date") != null ? rs.getString("appointment_date") : "N/A",
+                                    rs.getString("appointment_time") != null ? rs.getString("appointment_time") : "N/A",
+                                    rs.getString("status") != null ? rs.getString("status") : "N/A"
+                            );
                     }
-
-                    System.out.printf("| %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s | %-20s |%n",
-                            rs.getString("appointment_id"),
-                            rs.getString("doctor_id"),
-                            rs.getString("doctorFullName") != null ? rs.getString("doctorFullName") : "N/A",
-                            rs.getString("staff_id") != null ? rs.getString("staff_id") : "N/A",
-                            rs.getString("staffFullName") != null ? rs.getString("staffFullName") : "N/A",
-                            rs.getString("dental_service") != null ? rs.getString("dental_service") : "N/A",
-                            rs.getString("appointment_date") != null ? rs.getString("appointment_date") : "N/A",
-                            rs.getString("appointment_time") != null ? rs.getString("appointment_time") : "N/A",
-                            rs.getString("status") != null ? rs.getString("status") : "N/A"
-                    );
                 }
-
-                System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving patient appointments: " + e.getMessage());
         }
     }
-
 
     private void viewSpecificDoctor(String doctorID) {
         String query = "SELECT * FROM tbl_doctors WHERE dID = " + doctorID;

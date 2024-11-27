@@ -16,7 +16,6 @@ public class Config {
         try {
             Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
             con = DriverManager.getConnection("jdbc:sqlite:rode.db"); // Establish connection
-            System.out.println("\t\n(Connection Successful!)");
         } catch (Exception e) {
             System.out.println("\t\nConnection Failed: " + e);
         }
