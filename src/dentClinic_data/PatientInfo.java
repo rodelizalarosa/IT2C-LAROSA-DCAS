@@ -57,39 +57,65 @@ public class PatientInfo {
         } while(response);
 }
     
-    public void addPatients(){
+    public void addPatients() {
         Scanner sc = new Scanner(System.in);
-        
-        System.out.print("\n");
-        System.out.print("Patient First Name: ");
-        String fname = sc.nextLine();
-        System.out.print("Patient Last Name: ");
-        String lname = sc.nextLine();
-        System.out.print("Patient Age: ");
-        int age = sc.nextInt();
-        System.out.print("Patient Gender: ");
-        String gender = sc.next();
-        
-        String contnum;
-            while (true) {
-                System.out.print("Patient Contact Number (11 digits): ");
-                contnum = sc.next();
-                if (contnum.matches("\\d{11}")) {
-                    break;
-                } else {
-                    System.out.println("Invalid contact number. Must be 11 digits and numeric.");
-                }
+        int attempts = 0;
+
+        System.out.print("\nPatient's First Name: ");
+        String fname = sc.nextLine().trim();
+
+        System.out.print("Patient's Last Name: ");
+        String lname = sc.nextLine().trim();
+
+        String gender = "";
+        attempts = 0; 
+        while (attempts < 3) {
+            System.out.print("Patient's Gender (M/F): ");
+            gender = sc.nextLine().trim().toUpperCase();
+            if (gender.equals("M") || gender.equals("F")) {
+                break;
+            } else {
+                System.out.println("\tInvalid input. Please enter 'M' for Male or 'F' for Female.");
+                attempts++;
             }
+        }
         
+        if (attempts >= 3) {
+            System.out.println("\tToo many invalid attempts. Exiting Register a Patient . . . ");
+            return; 
+        }
+        
+        
+
+        String contnum = "";
+        while (attempts < 3) {
+            System.out.print("Patient's Contact Number (must be 11 digits): ");
+            contnum = sc.nextLine().trim();
+            if (contnum.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+                attempts++;
+            }
+        }
+
+        if (attempts >= 3) {
+            System.out.println("\tToo many invalid attempts. Exiting Register a Patient . . . ");
+            return; 
+        }
+
         System.out.print("Patient Email: ");
-        String email = sc.next();
+        String email = sc.nextLine().trim();
+
         System.out.print("Patient Address: ");
-        String address = sc.nextLine();
+        String address = sc.nextLine().trim();
 
-        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pAGE, pGENDER, pCONTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pGENDER, pCONTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?)";
 
-        conf.addRecords(sql, fname, lname, age, gender, contnum, email, address);
+        conf.addRecords(sql, fname, lname, gender, contnum, email, address);
+        System.out.println("\tPatient record added successfully!");
     }
+
     
     private void viewPatient() {
         viewConfig cnf = new viewConfig();
