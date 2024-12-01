@@ -3,6 +3,9 @@ package dentClinic_data;
 import static it2c.larosa.dcas.Config.connectDB;
 import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 
@@ -59,6 +62,7 @@ public class PatientInfo {
     
     public void addPatients() {
         Scanner sc = new Scanner(System.in);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         int attempts = 0;
 
         System.out.print("\nPatient's First Name: ");
@@ -67,6 +71,25 @@ public class PatientInfo {
         System.out.print("Patient's Last Name: ");
         String lname = sc.nextLine().trim();
 
+        String contnum = "";
+        while (attempts < 3) {
+            System.out.print("Patient's Contact Number (must be 11 digits): ");
+            contnum = sc.nextLine().trim();
+            if (contnum.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+                attempts++;
+            }
+        }
+
+        if (attempts >= 3) {
+            System.out.println("\tToo many invalid attempts. Exiting Register a Patient . . . ");
+            return; 
+        }
+        
+        attempts = 0;
+        
         String gender = "";
         attempts = 0; 
         while (attempts < 3) {
@@ -85,23 +108,44 @@ public class PatientInfo {
             return; 
         }
         
+        attempts = 0;
         
-
-        String contnum = "";
+        String dob = "";
         while (attempts < 3) {
-            System.out.print("Patient's Contact Number (must be 11 digits): ");
-            contnum = sc.nextLine().trim();
-            if (contnum.matches("\\d{11}")) {
-                break;
-            } else {
-                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+            System.out.print("Enter Patient's Date of Birth (YYYY-MM-DD): ");
+            dob = sc.nextLine().trim();
+
+            if (dob.isEmpty()) {
+                System.out.println("\tInvalid Input: Date of birth cannot be empty.");
+                attempts++;
+                continue;
+            }
+
+            try {
+                LocalDate parsedDate = LocalDate.parse(dob, formatter);
+
+                if (parsedDate.isAfter(LocalDate.now())) {
+                    System.out.println("\tInvalid Input: Date of birth cannot be in the future.");
+                    attempts++;
+                    continue;
+                }
+
+                if (parsedDate.isAfter(LocalDate.now().minusYears(1))) {
+                    System.out.println("\tInvalid Input: Patient must be at least 1 year old.");
+                    attempts++;
+                    continue;
+                }
+
+                break; 
+            } catch (DateTimeParseException e) {
+                System.out.println("\tInvalid Input: Please enter a valid date in the format (YYYY-MM-DD).");
                 attempts++;
             }
         }
 
         if (attempts >= 3) {
             System.out.println("\tToo many invalid attempts. Exiting Register a Patient . . . ");
-            return; 
+            return;
         }
 
         System.out.print("Patient Email: ");
@@ -110,9 +154,9 @@ public class PatientInfo {
         System.out.print("Patient Address: ");
         String address = sc.nextLine().trim();
 
-        String sql = "INSERT INTO tbl_patients (pFNAME, pLNAME, pGENDER, pCONTNUM, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?)";
+        String addPATIENT = "INSERT INTO tbl_patients (pFNAME, pLNAME, pCONTNUM, pGENDER, pDOB, pEMAIL, pADDRESS) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        conf.addRecords(sql, fname, lname, gender, contnum, email, address);
+        conf.addRecords(addPATIENT, fname, lname, contnum, gender, dob, email, address);
         System.out.println("\tPatient record added successfully!");
     }
 
