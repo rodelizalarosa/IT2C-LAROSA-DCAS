@@ -3,6 +3,12 @@
 import java.util.Scanner;
 import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Appointment {
     Config conf = new Config();
@@ -48,7 +54,7 @@ public class Appointment {
             System.out.println("===================================");
 
             System.out.print("Enter Option: ");
-            int act = conf.validateChoiceMain(); // Ensure valid input
+            int act = conf.validateChoiceMain(); 
 
             Appointment app = new Appointment();
             switch (act) {
@@ -69,7 +75,7 @@ public class Appointment {
                     break;
                 case 6:
                     System.out.println("Exiting Schedule an Appointment...");
-                    response = false; // Exit the loop
+                    response = false; 
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -89,9 +95,9 @@ public class Appointment {
      private void viewPatients() {
         viewConfig cnf = new viewConfig();
         
-        String rodeQuery = "SELECT pID, pFNAME, pLNAME, pAGE, pGENDER FROM tbl_patients";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender"};
-        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER"};
+        String rodeQuery = "SELECT pID, pFNAME, pLNAME, pGENDER FROM tbl_patients";
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Gender"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pGENDER"};
 
         cnf.viewPatients(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -108,7 +114,29 @@ public class Appointment {
     
     public void scheduleAppointment() {
         Scanner sc = new Scanner(System.in);
-        
+
+        System.out.print("\n");
+        System.out.print("=========================================");
+        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.print("=========================================");
+        System.out.print("Staff's Username: ");
+        String username = sc.nextLine().trim();
+        System.out.print("Staff's Password: ");
+        String password = sc.nextLine().trim();
+
+        // Hash the entered password for comparison
+        String hashedPassword = hashPassword(password);
+
+        // Authenticate staff credentials
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
+            System.out.println("Authentication failed. Access denied.");
+            return;
+        } else {
+            staffID = conf.sIDExists(username);  
+        }
+
+        // Step 2: Select Patient
         viewPatients();
         String patientID;
         int attempts = 0;
@@ -128,6 +156,7 @@ public class Appointment {
             return;
         }
 
+        // Step 3: Select Doctor
         viewDentist();
         String doctorID;
         attempts = 0;
@@ -146,32 +175,47 @@ public class Appointment {
             System.out.println("Maximum attempts reached. Returning...");
             return;
         }
-     
-        viewStaffs();
-        String staffID;
-        attempts = 0;
-        do {
-            System.out.print("Enter Staff ID: ");
-            staffID = sc.next();
-            attempts++;
-            if (!conf.sIDExists(staffID)) {
-                System.out.println("Invalid Staff ID. Please try again.");
-            } else {
-                break;
-            }
-        } while (attempts < 3);
 
-        if (attempts == 3 && !conf.sIDExists(staffID)) {
-            System.out.println("Maximum attempts reached. Returning...");
-            return;
+        String date = "";
+        boolean validDate = false;
+        int dateAttempts = 0;  
+        while (!validDate && dateAttempts < 3) {
+            System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
+            date = sc.next();
+            dateAttempts++;
+
+            if (!isValidDate(date)) {
+                System.out.println("Invalid date. Date must be current or in the future, and cannot be a Sunday.");
+            } else {
+                validDate = true;
+            }
+
+            if (dateAttempts >= 3 && !validDate) {
+                System.out.println("Maximum attempts reached for date validation. Returning...");
+                return;  
+            }
         }
 
-        
-        System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
-        String date = sc.next();
-        System.out.print("Enter Appointment Time (HH:MM): ");
-        String time = sc.next();
-        
+        String time = "";
+        boolean validTime = false;
+        int timeAttempts = 0;  
+        while (!validTime && timeAttempts < 3) {
+            System.out.print("Enter Appointment Time (HH:MM AM/PM): ");
+            time = sc.next();
+            timeAttempts++;
+
+            if (!isValidTime(time)) {
+                System.out.println("Invalid time. Time must be between 9:00 AM and 5:00 PM.");
+            } else {
+                validTime = true;
+            }
+
+            if (timeAttempts >= 3 && !validTime) {
+                System.out.println("Maximum attempts reached for time validation. Returning...");
+                return;  
+            }
+        }
+
         displayServices();
         System.out.print("Select Services (Enter numbers separated by commas): ");
         sc.nextLine();  
@@ -195,9 +239,71 @@ public class Appointment {
 
         String status = "Pending";
 
-        String sql = "INSERT INTO tbl_appointments (doctorID, patientID, staffID, appDATE, appTIME, appService, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        conf.addRecords(sql, doctorID, patientID, staffID.isEmpty() ? null : staffID, date, time, serviceChoice.toString(), status);
+        
+        String sql = "INSERT INTO tbl_appointments (doctorID, patientID, appDATE, appTIME, appService, status, staffID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        conf.addRecords(sql, doctorID, patientID, date, time, serviceChoice.toString(), status, staffID);
+        System.out.println("\tAppointment successfully scheduled!");
     }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+    import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+    public boolean isValidDate(String date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date appointmentDate = (Date) sdf.parse(date);  // This will parse the date string into a Date object
+
+            // Get the current date (without time)
+            Date currentDate = new Date();
+
+            // Check if the appointment date is before the current date
+            if (appointmentDate.before(currentDate)) {
+                return false;
+            }
+
+            // Check if the appointment date is a Sunday
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(appointmentDate);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            return dayOfWeek != Calendar.SUNDAY;
+        } catch (Exception e) {
+            return false;  // If parsing fails or any exception occurs, the date is invalid
+        }
+    }
+
+
+    private boolean isValidTime(String time) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            sdf.setLenient(false); 
+
+            Date appointmentTime = (Date) sdf.parse(time);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(appointmentTime);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+            return hour >= 9 && hour < 17;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+
 
 
     public void viewAppointment() {

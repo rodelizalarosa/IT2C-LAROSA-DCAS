@@ -26,46 +26,65 @@ public class Config {
     public int validateChoiceMain() {
         Scanner sc = new Scanner(System.in);
         int getNum;
+        int attempts = 0;
+        int maxAttempts = 3;
 
-        while (true) {
+        while (attempts < maxAttempts) {
             try {
                 getNum = sc.nextInt();
 
                 if (getNum < 1 || getNum > 6) { 
                     System.out.print("\tInvalid Input: Please enter a number between 1 and 6. Try again: ");
+                    attempts++; 
                     continue; 
                 }
-                break; 
+                return getNum; 
 
             } catch (InputMismatchException e) {
                 System.out.print("\tInvalid Input: Must only be a number, try again: ");
                 sc.next(); 
+                attempts++; 
+            }
+
+            if (attempts >= maxAttempts) {
+                System.out.println("\tMaximum attempts reached. Exiting...");
+                return -1; 
             }
         }
-        return getNum;
+        return -1; 
     }
+
     
     //VALIDATION FOR INDEPENDENT DATA
     public int validateChoice() {
         Scanner sc = new Scanner(System.in);
         int getNum;
+        int attempts = 0;
+        int maxAttempts = 3;
 
-        while (true) {
+        while (attempts < maxAttempts) {
             try {
                 getNum = sc.nextInt();
 
                 if (getNum < 1 || getNum > 5) {
                     System.out.print("\tInvalid Input: Please enter a number between 1 and 5. Try again: ");
+                    attempts++; 
                     continue; 
                 }
-                break; 
+                return getNum; 
 
             } catch (InputMismatchException e) {
                 System.out.print("\tInvalid Input: Must only be a number, try again: ");
                 sc.next(); 
+                attempts++; 
+            }
+
+            if (attempts >= maxAttempts) {
+                System.out.println("\tMaximum attempts reached. Exiting...");
+                return -1; 
             }
         }
-        return getNum;
+        return -1; 
     }
 
     
@@ -229,6 +248,27 @@ public class Config {
         }
         return false; 
     }
+    
+    public boolean authenticateStaff(String username, String password) {
+        String query = "SELECT * FROM tbl_staff WHERE username = ? AND password = ?";
+        try (Connection conn = connectDB(); 
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) { 
+                return true; 
+            } else {
+                return false; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during authentication: " + e.getMessage());
+            return false;
+        }
+    }
+
     
     public boolean dIDExists(String doctorID) {
         String sql = "SELECT COUNT(*) FROM tbl_doctors WHERE dID = ?";

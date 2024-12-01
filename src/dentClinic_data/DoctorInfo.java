@@ -56,107 +56,131 @@ public class DoctorInfo {
     }
     
     public void addDoctor() {
-        Scanner sc = new Scanner(System.in);        
+        Scanner sc = new Scanner(System.in);     
+        int attempts = 0;
         
         System.out.print("\n");
-        System.out.print("Doctor First Name: ");
+        System.out.print("Doctor's First Name: ");
         String fname = sc.nextLine();
-        System.out.print("Doctor Last Name: ");
+        
+        System.out.print("Doctor's Last Name: ");
         String lname = sc.nextLine();
-        System.out.print("Doctor Specialization: ");
+        
+        System.out.print("Doctor's Specialization: ");
         String specialization = sc.nextLine();
   
-        String contnum;
-            while (true) {
-                System.out.print("Doctor Contact Number (11 digits): ");
-                contnum = sc.next();
-                if (contnum.matches("\\d{11}")) {
-                    break;
-                } else {
-                    System.out.println("Invalid contact number. Must be 11 digits and numeric.");
-                }
+        String contnum = "";
+        while (attempts < 3) {
+            System.out.print("Doctor's Contact Number (must be 11 digits): ");
+            contnum = sc.nextLine().trim();
+            if (contnum.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+                attempts++;
             }
-        
-        System.out.print("Doctor Availability Start: ");
-        String availStart = sc.next();
-        System.out.print("Doctor Availability End: ");
-        String availEnd = sc.next();
+        }
 
-        String sql = "INSERT INTO tbl_doctors (dFNAME, dLNAME, dSPECIALIZATION, dCONTNUM, dAVAILABILITY_START, dAVAILABILITY_END) VALUES (?, ?, ?, ?, ?, ?)";
+        if (attempts >= 3) {
+            System.out.println("\tToo many invalid attempts. Exiting Register a Doctor . . . ");
+            return; 
+        }
+   
+        String addDOCTOR = "INSERT INTO tbl_doctors (dFNAME, dLNAME, dSPECIALIZATION, dCONTNUM) VALUES (?, ?, ?, ?)";
 
-        conf.addRecords(sql, fname, lname, specialization, contnum, availStart, availEnd);
+        conf.addRecords(addDOCTOR, fname, lname, specialization, contnum);
     }
     
     private void viewDoctors() {
         String rodeQuery = "SELECT * FROM tbl_doctors";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number", "Availability Start", "Availability End"};
-        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTNUM", "dAVAILABILITY_START", "dAVAILABILITY_END"};
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number"};
+        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTNUM"};
         
         viewConfig cnf = new viewConfig();
         cnf.viewDoctor(rodeQuery, rodeHeaders, rodeColumns);
     }
-
+    
     private void updateDoctor() {
         Scanner sc = new Scanner(System.in);
-        
+
         String doctorID = "";
-        boolean idexist = false;
+        boolean idExist = false;
         int attempts = 0;
         int maxAttempts = 3;
 
-        while (!idexist && attempts < maxAttempts) {
+        while (!idExist && attempts < maxAttempts) {
             System.out.print("\nEnter Doctor ID to update (3 max attempts): ");
-            doctorID = sc.next();
+            doctorID = sc.nextLine().trim();
 
             if (conf.dIDExists(doctorID)) {
-                idexist = true;
+                idExist = true;
                 System.out.println("Doctor ID found.");
             } else {
                 attempts++;
-                System.out.println("\tInvalid ID or ID not Existed.");
+                System.out.println("\tInvalid ID or ID does not exist.");
 
                 if (attempts >= maxAttempts) {
                     System.out.println("Maximum attempts reached. Exiting...");
                     return;
                 }
             }
-        }            
-        System.out.print("\n");
-        System.out.print("Enter new First Name: ");
-        String updfname = sc.next();
-        
-        System.out.print("Enter new Last Name: ");
-        String updlname = sc.next();
-        
-        System.out.print("Enter new Specialization: ");
-        String updspecialization = sc.next();
-        
-        String updcontnum;
-            while (true) {
-                    System.out.print("Enter new Contact Number (11 digits): ");
-                    updcontnum = sc.next();
-                    if (updcontnum.matches("\\d{11}")) {
-                        break;
-                    } else {
-                        System.out.println("Invalid contact number. Must be 11 digits and numeric.");
-                    }
+        }
+
+        System.out.print("\nDoctor's New First Name: ");
+        String fname = sc.nextLine().trim();
+
+        System.out.print("Doctor's New Last Name: ");
+        String lname = sc.nextLine().trim();
+
+        System.out.print("Doctor's New Specialization: ");
+        String specialization = sc.nextLine().trim();
+
+        String contnum = "";
+        attempts = 0;
+        while (attempts < 3) {
+            System.out.print("Doctor's New Contact Number (must be 11 digits): ");
+            contnum = sc.nextLine().trim();
+            if (contnum.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+                attempts++;
             }
-        
-        System.out.print("Enter new Availability Start: ");
-        String updavailStart = sc.next();
-        
-        System.out.print("Enter new Availability End: ");
-        String updavailEnd = sc.next();
-        
-        String update = "UPDATE tbl_doctors SET dFNAME = ?, dLNAME = ?, dSPECIALIZATION = ?, dCONTNUM = ?, dAVAILABILITY_START = ?, dAVAILABILITY_END = ? WHERE dID = ?";
+        }
+
+        if (attempts >= 3) {
+            System.out.println("\tToo many invalid attempts. Exiting update process...");
+            return;
+        }
+
+        String updateDOCTOR = "UPDATE tbl_doctors SET dFNAME = ?, dLNAME = ?, dSPECIALIZATION = ?, dCONTNUM = ? WHERE dID = ?";
       
-        conf.updateRecords(update, updfname, updlname, updspecialization, updcontnum, updavailStart, updavailEnd, doctorID);
+        conf.updateRecords(updateDOCTOR, fname, lname, specialization, contnum, doctorID);
     }
     
     
     private void deleteDoctor() {
         Scanner sc = new Scanner(System.in);
 
+        System.out.print("\n");
+        System.out.print("=========================================");
+        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.print("=========================================");
+        System.out.print("Staff's Username: ");
+        String username = sc.nextLine().trim();
+        System.out.print("Staff's Password: ");
+        String password = sc.nextLine().trim();
+
+        if (!conf.authenticateStaff(username, password)) { 
+            System.out.println("Authentication failed. Access denied.");
+            return;
+        }
+
+        System.out.println("Authentication successful. Proceeding with doctor deletion.");
+
+        boolean continueDeleting = true;
+        
+        while (continueDeleting){
         String doctorID = "";
         boolean idExist = false;
         int attempts = 0;
@@ -171,7 +195,7 @@ public class DoctorInfo {
                 System.out.println("Doctor ID found.");
             } else {
                 attempts++;
-                System.out.println("Invalid ID or ID does not exist.");
+                System.out.println("\tInvalid ID or ID does not exist.");
 
                 if (attempts >= maxAttempts) {
                     System.out.println("Maximum attempts reached. Exiting...");
@@ -190,6 +214,16 @@ public class DoctorInfo {
             System.out.println("Failed to delete doctor record. Please try again.");
         } else {
             System.out.println("Doctor record deleted successfully.");
+        }
+        
+            System.out.print("\nDo you want to delete another doctor? (yes/no): ");
+            String response = sc.next().trim().toLowerCase();
+
+            if (!response.equals("yes")) {
+                continueDeleting = false;
+                System.out.println("Exiting doctor deletion process . . .");
+            }
+        
         }
     }
 

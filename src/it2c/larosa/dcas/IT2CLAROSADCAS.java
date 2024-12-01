@@ -28,7 +28,7 @@ public class IT2CLAROSADCAS {
         System.out.println("*         6. EXIT                                    *");
         System.out.println("******************************************************");
                 
-        System.out.print ("Enter Action: ");
+        System.out.print ("Enter Action (3 max attempts): ");
         int act = conf.validateChoiceMain();
                                       
         switch (act){
