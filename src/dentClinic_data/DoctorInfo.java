@@ -179,29 +179,29 @@ public class DoctorInfo {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Staff's Password: ");
-        String password = sc.nextLine().trim();
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         String staffID = "";
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         } else {
             staffID = conf.getStaffID(username); 
             if (staffID == null || staffID.isEmpty()) {
-                System.out.println("Staff ID not found for the authenticated username.");
+                System.out.println("\nStaff ID not found for the authenticated username.");
                 return;
             }
         }
         
-        System.out.println("Authentication successful. Proceeding with doctor deletion.");
+        System.out.println("\nAuthentication successful. Proceeding with doctor deletion.");
 
         boolean continueDeleting = true;
         

@@ -117,7 +117,7 @@ public class PatientInfo {
         
         String dob = "";
         while (attempts < 3) {
-            System.out.print("Enter Patient's Date of Birth (YYYY-MM-DD): ");
+            System.out.print("Patient's Date of Birth (YYYY-MM-DD): ");
             dob = sc.nextLine().trim();
 
             if (dob.isEmpty()) {
@@ -157,7 +157,7 @@ public class PatientInfo {
         
         String email = "";
         while (attempts < 3) {
-            System.out.print("Enter Patient's Email: ");
+            System.out.print("Patient's Email: ");
             email = sc.nextLine().trim();
 
                 if (email.isEmpty()) {
@@ -212,8 +212,6 @@ public class PatientInfo {
                 return;
             }
 
-            System.out.println("Patient registration completed successfully!");
-
         System.out.print("Patient Address: ");
         String address = sc.nextLine().trim();
 
@@ -228,8 +226,8 @@ public class PatientInfo {
         viewConfig cnf = new viewConfig();
         
         String rodeQuery = "SELECT * FROM tbl_patients";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender", "Contact Number", "Email", "Address"};
-        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTNUM", "pEMAIL", "pADDRESS"};
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Contact Number", "Gender", "Date of Birth", "Email", "Address"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pCONTNUM", "pGENDER", "pDOB", "pEMAIL", "pADDRESS"};
 
         cnf.viewPatient(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -239,29 +237,29 @@ public class PatientInfo {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Staff's Password: ");
-        String password = sc.nextLine().trim();
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         String staffID = "";
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         } else {
             staffID = conf.getStaffID(username); 
             if (staffID == null || staffID.isEmpty()) {
-                System.out.println("Staff ID not found for the authenticated username.");
+                System.out.println("\nStaff ID not found for the authenticated username.");
                 return;
             }
         }
         
-        System.out.println("Authentication successful. Proceeding with patient update.");
+        System.out.println("\nAuthentication successful. Proceeding with patient update.");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         int attempts = 0;
@@ -294,6 +292,24 @@ public class PatientInfo {
         System.out.print("Enter new Last Name: ");
         String updlname = sc.nextLine().trim();
 
+        String updcontnum = "";
+        attempts = 0;
+        while (attempts < 3) {
+            System.out.print("Enter new Contact Number (11 digits): ");
+            updcontnum = sc.nextLine().trim();
+            if (updcontnum.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
+                attempts++;
+            }
+        }
+
+        if (attempts >= maxAttempts) {
+            System.out.println("\tToo many invalid attempts. Exiting update process...");
+            return;
+        }
+        
         String updgen = "";
         attempts = 0;
         while (attempts < 3) {
@@ -310,8 +326,8 @@ public class PatientInfo {
         if (attempts >= maxAttempts) {
             System.out.println("\tToo many invalid attempts. Exiting update process...");
             return;
-        }
-
+        }       
+        
         String upddob = "";
         attempts = 0;
         while (attempts < 3) {
@@ -342,24 +358,6 @@ public class PatientInfo {
                 break;
             } catch (DateTimeParseException e) {
                 System.out.println("\tInvalid input: Please enter a valid date in the format (YYYY-MM-DD).");
-                attempts++;
-            }
-        }
-
-        if (attempts >= maxAttempts) {
-            System.out.println("\tToo many invalid attempts. Exiting update process...");
-            return;
-        }
-
-        String updcontnum = "";
-        attempts = 0;
-        while (attempts < 3) {
-            System.out.print("Enter new Contact Number (11 digits): ");
-            updcontnum = sc.nextLine().trim();
-            if (updcontnum.matches("\\d{11}")) {
-                break;
-            } else {
-                System.out.println("\tInvalid contact number. Must be 11 digits and numeric.");
                 attempts++;
             }
         }
@@ -439,29 +437,29 @@ public class PatientInfo {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Staff's Password: ");
-        String password = sc.nextLine().trim();
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         String staffID = "";
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         } else {
             staffID = conf.getStaffID(username); 
             if (staffID == null || staffID.isEmpty()) {
-                System.out.println("Staff ID not found for the authenticated username.");
+                System.out.println("\nStaff ID not found for the authenticated username.");
                 return;
             }
         }
         
-        System.out.println("Authentication successful. Proceeding with patient deletion.");
+        System.out.println("\nAuthentication successful. Proceeding with patient deletion.");
 
         boolean continueDeleting = true;
 

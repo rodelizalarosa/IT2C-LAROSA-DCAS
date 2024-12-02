@@ -250,7 +250,7 @@ public class Config {
     }
     
     public boolean authenticateStaff(String username, String password) {
-        String query = "SELECT * FROM tbl_staff WHERE username = ? AND password = ?";
+        String query = "SELECT * FROM tbl_staff WHERE sUSERNAME = ? AND sPASS = ?";
         try (Connection conn = connectDB(); 
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 

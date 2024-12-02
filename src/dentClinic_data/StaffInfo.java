@@ -137,7 +137,7 @@ public class StaffInfo {
    
     private void viewStaff() { 
         
-        String rodeQuery = "SELECT sFNAME, sLNAME, sROLE, sCONTNUM, sUSERNAME FROM tbl_staff";
+        String rodeQuery = "SELECT sID, sFNAME, sLNAME, sROLE, sCONTNUM, sUSERNAME FROM tbl_staff";
         String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role", "Contact Number", "Username"};
         String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTNUM", "sUSERNAME"};
         
@@ -149,18 +149,18 @@ public class StaffInfo {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
         String username = sc.nextLine();
-        System.out.print("Staff's Password: ");
+        System.out.print("\tStaff's Password: ");
         String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         }
 
@@ -169,14 +169,14 @@ public class StaffInfo {
 
         
         System.out.print("\n");
-        System.out.print("=============================================================");
-        System.out.print("    Authentication successful! What would you like to do?    ");
-        System.out.print("-------------------------------------------------------------");
-        System.out.print("                   UPDATE STAFF INFORMATION                  ");
-        System.out.print("-------------------------------------------------------------");
-        System.out.print("                1. Update Username and Password              ");
-        System.out.print("                2. Edit Staff Information                    ");
-        System.out.print("=============================================================");
+        System.out.println("=============================================================");
+        System.out.println("    Authentication successful! What would you like to do?    ");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("                   UPDATE STAFF INFORMATION                  ");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("                1. Update Username and Password              ");
+        System.out.println("                2. Edit Staff Information                    ");
+        System.out.println("=============================================================");
 
         while (attempts < 3 && !validChoice) {
             System.out.print("Enter your choice (1 or 2): ");
@@ -191,6 +191,7 @@ public class StaffInfo {
                         break;
 
                     case 2:
+                        viewStaff();
                         validChoice = true;
                         editStaffInfo();
                         break;
@@ -201,7 +202,7 @@ public class StaffInfo {
                         break;
                 }
             } else {
-                sc.next(); // Consume invalid input
+                sc.next(); 
                 attempts++;
                 System.out.println("\tInvalid input. Please enter a number. You have " + (3 - attempts) + " attempt(s) remaining.");
             }
@@ -313,18 +314,18 @@ public class StaffInfo {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Staff's Password: ");
-        String password = sc.nextLine().trim();
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         }
 

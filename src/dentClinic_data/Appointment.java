@@ -116,24 +116,24 @@ public class Appointment {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("\n");
-        System.out.print("=========================================");
-        System.out.print("       STAFF AUTHENTICATION ACCESS       ");
-        System.out.print("=========================================");
-        System.out.print("Staff's Username: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Staff's Password: ");
-        String password = sc.nextLine().trim();
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
         String hashedPassword = hashPassword(password);
 
         String staffID = "";
         if (!conf.authenticateStaff(username, hashedPassword)) {
-            System.out.println("Authentication failed. Access denied.");
+            System.out.println("\nAuthentication failed. Access denied.");
             return;
         } else {
-            staffID = conf.getStaffID(username);  // Use a method that returns the staff ID
+            staffID = conf.getStaffID(username); 
             if (staffID == null || staffID.isEmpty()) {
-                System.out.println("Staff ID not found for the authenticated username.");
+                System.out.println("\nStaff ID not found for the authenticated username.");
                 return;
             }
         }
@@ -358,7 +358,30 @@ public class Appointment {
 
     public void updateAppointment() {
         Scanner sc = new Scanner(System.in);
+        
+        System.out.print("\n");
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
 
+        String hashedPassword = hashPassword(password);
+
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
+            System.out.println("\nAuthentication failed. Access denied.");
+            return;
+        } else {
+            staffID = conf.getStaffID(username); 
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("\nStaff ID not found for the authenticated username.");
+                return;
+            }
+        }
+        
         viewAppointment(); 
         String appID = "";
         int attempts = 0;
@@ -403,19 +426,7 @@ public class Appointment {
                 System.out.println("Invalid Patient ID. Please try again.");
             }
         } while (true);
-
-        viewStaffs();
-        String staffID;
-        do {
-            System.out.print("Enter new Staff ID: ");
-            staffID = sc.next();
-            if (conf.sIDExists(staffID)) {
-                break;
-            } else {
-                System.out.println("Invalid Staff ID. Please try again.");
-            }
-        } while (true);
-
+       
         System.out.print("Enter new Date (YYYY-MM-DD): ");
         String date = sc.next();
         System.out.print("Enter new Time (HH:MM): ");
