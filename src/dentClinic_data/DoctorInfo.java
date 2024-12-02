@@ -3,6 +3,8 @@ package dentClinic_data;
 import static it2c.larosa.dcas.Config.connectDB;
 import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class DoctorInfo {
@@ -158,6 +160,20 @@ public class DoctorInfo {
         conf.updateRecords(updateDOCTOR, fname, lname, specialization, contnum, doctorID);
     }
     
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+    
     
     private void deleteDoctor() {
         Scanner sc = new Scanner(System.in);
@@ -171,11 +187,20 @@ public class DoctorInfo {
         System.out.print("Staff's Password: ");
         String password = sc.nextLine().trim();
 
-        if (!conf.authenticateStaff(username, password)) { 
+        String hashedPassword = hashPassword(password);
+
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
             System.out.println("Authentication failed. Access denied.");
             return;
+        } else {
+            staffID = conf.getStaffID(username); 
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("Staff ID not found for the authenticated username.");
+                return;
+            }
         }
-
+        
         System.out.println("Authentication successful. Proceeding with doctor deletion.");
 
         boolean continueDeleting = true;

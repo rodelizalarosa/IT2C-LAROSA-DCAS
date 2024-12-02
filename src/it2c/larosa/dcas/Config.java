@@ -318,6 +318,22 @@ public class Config {
         return false; 
     }
     
+    public String getStaffID(String username) {
+        String sql = "SELECT sID FROM tbl_staff WHERE sUSERNAME = ?";
+        try (Connection conn = connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("sID"); 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving Staff ID: " + e.getMessage());
+        }
+        return null; 
+    }
+
+    
     public boolean hasStaffApp(String staffID) {
         String query = "SELECT COUNT(*) FROM tbl_appointments WHERE staffID = ?";
         try (Connection conn = connectDB();

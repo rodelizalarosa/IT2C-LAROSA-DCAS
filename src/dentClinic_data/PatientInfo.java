@@ -3,6 +3,8 @@ package dentClinic_data;
 import static it2c.larosa.dcas.Config.connectDB;
 import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -240,17 +242,25 @@ public class PatientInfo {
         System.out.print("=========================================");
         System.out.print("       STAFF AUTHENTICATION ACCESS       ");
         System.out.print("=========================================");
-        System.out.print("Staff's username: ");
+        System.out.print("Staff's Username: ");
         String username = sc.nextLine().trim();
-
-        System.out.print("Staff's password: ");
+        System.out.print("Staff's Password: ");
         String password = sc.nextLine().trim();
 
-        if (!conf.authenticateStaff(username, password)) { 
+        String hashedPassword = hashPassword(password);
+
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
             System.out.println("Authentication failed. Access denied.");
             return;
+        } else {
+            staffID = conf.getStaffID(username); 
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("Staff ID not found for the authenticated username.");
+                return;
+            }
         }
-
+        
         System.out.println("Authentication successful. Proceeding with patient update.");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -411,6 +421,20 @@ public class PatientInfo {
         conf.updateRecords(updatePATIENT, updfname, updlname, updgen, upddob, updcontnum, updemail, upadd, patientID);
     }
     
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+    
     private void deletePatient() {
         Scanner sc = new Scanner(System.in);
 
@@ -420,15 +444,23 @@ public class PatientInfo {
         System.out.print("=========================================");
         System.out.print("Staff's Username: ");
         String username = sc.nextLine().trim();
-
         System.out.print("Staff's Password: ");
         String password = sc.nextLine().trim();
 
-        if (!conf.authenticateStaff(username, password)) { 
+        String hashedPassword = hashPassword(password);
+
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
             System.out.println("Authentication failed. Access denied.");
             return;
+        } else {
+            staffID = conf.getStaffID(username); 
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("Staff ID not found for the authenticated username.");
+                return;
+            }
         }
-
+        
         System.out.println("Authentication successful. Proceeding with patient deletion.");
 
         boolean continueDeleting = true;

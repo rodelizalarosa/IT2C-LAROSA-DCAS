@@ -5,7 +5,7 @@ import it2c.larosa.dcas.Config;
 import it2c.larosa.dcas.viewConfig;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Date;
+import java.util.Date; 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -124,19 +124,20 @@ public class Appointment {
         System.out.print("Staff's Password: ");
         String password = sc.nextLine().trim();
 
-        // Hash the entered password for comparison
         String hashedPassword = hashPassword(password);
 
-        // Authenticate staff credentials
         String staffID = "";
         if (!conf.authenticateStaff(username, hashedPassword)) {
             System.out.println("Authentication failed. Access denied.");
             return;
         } else {
-            staffID = conf.sIDExists(username);  
+            staffID = conf.getStaffID(username);  // Use a method that returns the staff ID
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("Staff ID not found for the authenticated username.");
+                return;
+            }
         }
 
-        // Step 2: Select Patient
         viewPatients();
         String patientID;
         int attempts = 0;
@@ -156,7 +157,6 @@ public class Appointment {
             return;
         }
 
-        // Step 3: Select Doctor
         viewDentist();
         String doctorID;
         attempts = 0;
@@ -258,34 +258,27 @@ public class Appointment {
             throw new RuntimeException("Error hashing password", e);
         }
     }
-    import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
     public boolean isValidDate(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date appointmentDate = (Date) sdf.parse(date);  // This will parse the date string into a Date object
+            Date appointmentDate = (Date) sdf.parse(date);  
 
-            // Get the current date (without time)
             Date currentDate = new Date();
 
-            // Check if the appointment date is before the current date
             if (appointmentDate.before(currentDate)) {
                 return false;
             }
 
-            // Check if the appointment date is a Sunday
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(appointmentDate);
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
             return dayOfWeek != Calendar.SUNDAY;
         } catch (Exception e) {
-            return false;  // If parsing fails or any exception occurs, the date is invalid
+            return false;  
         }
     }
-
 
     private boolean isValidTime(String time) {
         try {
@@ -302,9 +295,6 @@ import java.util.Date;
             return false;
         }
     }
-
-
-
 
     public void viewAppointment() {
         String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
