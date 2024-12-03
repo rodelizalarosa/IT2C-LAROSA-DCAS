@@ -68,11 +68,11 @@ public class viewConfig {
              ResultSet rs = pstmt.executeQuery()) {
 
             StringBuilder headerLine = new StringBuilder();
-            headerLine.append("------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| ");
+            headerLine.append("--------------------------------------------------------------------------------------------------------------------\n| ");
             for (String header : columnHeaders) {
                 headerLine.append(String.format("%-20s | ", header)); 
             }
-            headerLine.append("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------ ");
+            headerLine.append("\n--------------------------------------------------------------------------------------------------------------------");
 
             System.out.println(headerLine.toString());
 
@@ -84,7 +84,7 @@ public class viewConfig {
                 }
                 System.out.println(row.toString());
             }
-            System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------ ");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------");
 
         } catch (SQLException e) {
             System.out.println("Error retrieving records: " + e.getMessage());
@@ -208,11 +208,11 @@ public class viewConfig {
              ResultSet rs = pstmt.executeQuery()) {
 
             StringBuilder headerLine = new StringBuilder();
-            headerLine.append("--------------------------------------------------------------------------------------------------------------------\n| ");
+            headerLine.append("---------------------------------------------------------------------------------------------\n| ");
             for (String header : columnHeaders) {
                 headerLine.append(String.format("%-20s | ", header)); 
             }
-            headerLine.append("\n--------------------------------------------------------------------------------------------------------------------");
+            headerLine.append("\n---------------------------------------------------------------------------------------------");
 
             System.out.println(headerLine.toString());
             
@@ -224,7 +224,7 @@ public class viewConfig {
                 }
                 System.out.println(row.toString());
             }
-            System.out.println("--------------------------------------------------------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------------------------------");
 
         } catch (SQLException e) {
             System.out.println("Error retrieving records: " + e.getMessage());

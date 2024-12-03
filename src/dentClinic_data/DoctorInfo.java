@@ -122,7 +122,7 @@ public class DoctorInfo {
                 System.out.println("\tInvalid ID or ID does not exist.");
 
                 if (attempts >= maxAttempts) {
-                    System.out.println("Maximum attempts reached. Exiting...");
+                    System.out.println("Maximum attempts reached. Exiting update process...");
                     return;
                 }
             }

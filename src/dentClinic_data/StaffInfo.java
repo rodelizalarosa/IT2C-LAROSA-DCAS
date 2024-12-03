@@ -176,10 +176,11 @@ public class StaffInfo {
         System.out.println("-------------------------------------------------------------");
         System.out.println("                1. Update Username and Password              ");
         System.out.println("                2. Edit Staff Information                    ");
+        System.out.println("                3. Exit                                      ");
         System.out.println("=============================================================");
 
         while (attempts < 3 && !validChoice) {
-            System.out.print("Enter your choice (1 or 2): ");
+            System.out.print("Enter your choice (1, 2, or 3): ");
             if (sc.hasNextInt()) {
                 int choice = sc.nextInt();
                 sc.nextLine(); 
@@ -196,19 +197,24 @@ public class StaffInfo {
                         editStaffInfo();
                         break;
 
+                    case 3:
+                        validChoice = true;
+                        System.out.println("Exiting the update staff information . . .");
+                        return;
+
                     default:
                         attempts++;
-                        System.out.println("\tInvalid choice. Please enter 1 or 2. You have " + (3 - attempts) + " attempt(s) remaining.");
+                        System.out.println("\tInvalid choice. Please enter 1, 2, or 3. You have " + (3 - attempts) + " attempt(s) remaining.");
                         break;
                 }
             } else {
-                sc.next(); 
+                sc.next();
                 attempts++;
                 System.out.println("\tInvalid input. Please enter a number. You have " + (3 - attempts) + " attempt(s) remaining.");
             }
 
             if (attempts >= 3) {
-                System.out.println("\tMaximum attempts reached. Exiting...");
+                System.out.println("\tMaximum attempts reached. Exiting update staff information ...");
                 return;
             }
         }
@@ -345,7 +351,7 @@ public class StaffInfo {
                 System.out.println("Invalid ID or ID does not exist.");
 
                 if (attempts >= maxAttempts) {
-                    System.out.println("Maximum attempts reached. Exiting...");
+                    System.out.println("Maximum attempts reached. Exiting deletion process ...");
                     return;
                 }
             }

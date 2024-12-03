@@ -50,6 +50,7 @@ public class PatientInfo {
                     case 3:
                         pINFO.viewPatient();
                         pINFO.updatePatient();
+                        pINFO.viewPatient();
                         break;
                     case 4:
                         pINFO.viewPatient();

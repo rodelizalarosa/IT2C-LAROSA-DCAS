@@ -178,10 +178,11 @@ public class Appointment {
 
         String date = "";
         boolean validDate = false;
-        int dateAttempts = 0;  
+        int dateAttempts = 0;
+
         while (!validDate && dateAttempts < 3) {
             System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
-            date = sc.next();
+            date = sc.nextLine(); 
             dateAttempts++;
 
             if (!isValidDate(date)) {
@@ -190,18 +191,20 @@ public class Appointment {
                 validDate = true;
             }
 
-            if (dateAttempts >= 3 && !validDate) {
+            if (dateAttempts == 3 && !validDate) {
                 System.out.println("Maximum attempts reached for date validation. Returning...");
-                return;  
+                return;
             }
-        }
+        }   
+
 
         String time = "";
         boolean validTime = false;
-        int timeAttempts = 0;  
+        int timeAttempts = 0;
+
         while (!validTime && timeAttempts < 3) {
             System.out.print("Enter Appointment Time (HH:MM AM/PM): ");
-            time = sc.next();
+            time = sc.nextLine().trim().toUpperCase();
             timeAttempts++;
 
             if (!isValidTime(time)) {
@@ -210,9 +213,9 @@ public class Appointment {
                 validTime = true;
             }
 
-            if (timeAttempts >= 3 && !validTime) {
+            if (timeAttempts == 3 && !validTime) {
                 System.out.println("Maximum attempts reached for time validation. Returning...");
-                return;  
+                return;
             }
         }
 
@@ -283,18 +286,21 @@ public class Appointment {
     private boolean isValidTime(String time) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-            sdf.setLenient(false); 
+            sdf.setLenient(false);
 
-            Date appointmentTime = (Date) sdf.parse(time);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(appointmentTime);
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            Date appointmentTime = sdf.parse(time);
+           
+            Date startTime = sdf.parse("09:00 AM");
+            Date endTime = sdf.parse("05:00 PM");
 
-            return hour >= 9 && hour < 17;
+            
+            return !appointmentTime.before(startTime) && !appointmentTime.after(endTime);
         } catch (ParseException e) {
             return false;
         }
     }
+
+
 
     public void viewAppointment() {
         String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
