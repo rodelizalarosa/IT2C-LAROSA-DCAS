@@ -266,6 +266,45 @@ public class viewConfig {
         }
     }
     
+    public void viewAssociatedAppointment(String sqlQuery, String[] columnHeaders, String[] columnNames, String id) {
+        if (columnHeaders.length != columnNames.length) {
+            System.out.println("Error: Mismatch between column headers and column names.");
+            return;
+        }
+
+        try (Connection conn = this.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
+
+            pstmt.setString(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                StringBuilder headerLine = new StringBuilder();
+                headerLine.append("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| ");
+                for (String header : columnHeaders) {
+                    headerLine.append(String.format("%-20s | ", header));
+                }
+                headerLine.append("\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+                System.out.println(headerLine.toString());
+
+                while (rs.next()) {
+                    StringBuilder row = new StringBuilder("| ");
+                    for (String colName : columnNames) {
+                        String value = rs.getString(colName);
+                        row.append(String.format("%-20s | ", value != null ? value : ""));
+                    }
+                    System.out.println(row.toString());
+                }
+                System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving records: " + e.getMessage());
+        }
+    }
+
+    
     public ResultSet executeQuery(String query) throws SQLException {
             Config conf = new Config();
             Connection conn = conf.connectDB(); 

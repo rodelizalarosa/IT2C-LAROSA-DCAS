@@ -352,20 +352,20 @@ public class Config {
     }
     
     public boolean appIDExists(String appID) {
-        String sql = "SELECT COUNT(*) FROM tbl_staff WHERE sID = ?";
+        String sql = "SELECT COUNT(*) FROM tbl_appointments WHERE appID = ?";
         try (Connection conn = connectDB();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, appID);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, appID.trim()); 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0; 
             }
         } catch (SQLException e) {
-            System.out.println("Error checking Staff ID: " + e.getMessage());
+            System.out.println("Error checking Appointment ID: " + e.getMessage());
         }
-        
         return false; 
     }
+
     
      public String getStatus(String appID) {
         String status = null;

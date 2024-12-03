@@ -8,7 +8,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date; 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
+import java.util.InputMismatchException;
 
 public class Appointment {
     Config conf = new Config();
@@ -177,67 +183,110 @@ public class Appointment {
         }
 
         String date = "";
-        boolean validDate = false;
         int dateAttempts = 0;
 
-        while (!validDate && dateAttempts < 3) {
+        while (dateAttempts < 3) {
             System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
-            date = sc.nextLine(); 
+            if (sc.hasNextLine()) {
+                date = sc.nextLine().trim();
+            }
+
             dateAttempts++;
 
-            if (!isValidDate(date)) {
-                System.out.println("Invalid date. Date must be current or in the future, and cannot be a Sunday.");
-            } else {
-                validDate = true;
+            // Check for empty input
+            if (date.isEmpty()) {
+                System.out.println("Date cannot be empty. Please enter a valid date in the format YYYY-MM-DD.");
+                continue; // Skip to the next iteration
             }
 
-            if (dateAttempts == 3 && !validDate) {
+            try {
+                LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // Validate date: not in the past, not a Sunday
+                if (parsedDate.isBefore(LocalDate.now())) {
+                    System.out.println("Invalid date. Date must be current or in the future.");
+                } else if (parsedDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                    System.out.println("Invalid date. Date cannot be a Sunday.");
+                } else {
+                    // Valid date, break out of the loop
+                    break;
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter a date in the format YYYY-MM-DD.");
+            }
+
+            // If maximum attempts are reached
+            if (dateAttempts == 3) {
                 System.out.println("Maximum attempts reached for date validation. Returning...");
-                return;
-            }
-        }   
-
-
-        String time = "";
-        boolean validTime = false;
-        int timeAttempts = 0;
-
-        while (!validTime && timeAttempts < 3) {
-            System.out.print("Enter Appointment Time (HH:MM AM/PM): ");
-            time = sc.nextLine().trim().toUpperCase();
-            timeAttempts++;
-
-            if (!isValidTime(time)) {
-                System.out.println("Invalid time. Time must be between 9:00 AM and 5:00 PM.");
-            } else {
-                validTime = true;
-            }
-
-            if (timeAttempts == 3 && !validTime) {
-                System.out.println("Maximum attempts reached for time validation. Returning...");
                 return;
             }
         }
 
+        String time = "";
+        int timeAttempts = 0;
+
+        while (timeAttempts < 3) {
+            System.out.print("Enter Appointment Time (HH:MM AM/PM): ");
+            time = sc.nextLine().trim().toUpperCase();
+            timeAttempts++;
+
+            try {
+                // Parse the time using SimpleDateFormat
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                sdf.setLenient(false); // Ensure strict parsing
+                Date parsedTime = sdf.parse(time);
+
+                // Define start and end time boundaries
+                Date startTime = sdf.parse("09:00 AM");
+                Date endTime = sdf.parse("05:00 PM");
+
+                if (parsedTime.before(startTime) || parsedTime.after(endTime)) {
+                    System.out.println("Invalid time. Time must be between 9:00 AM and 5:00 PM.");
+                } else {
+                    // Valid time
+                    break;
+                }
+            } catch (ParseException e) {
+                System.out.println("Invalid time format. Please enter a time in the format HH:MM AM/PM.");
+            }
+        }
+
+        if (timeAttempts == 3) {
+            System.out.println("Maximum attempts reached for time validation. Returning...");
+            return;
+        }
+
         displayServices();
         System.out.print("Select Services (Enter numbers separated by commas): ");
-        sc.nextLine();  
-        String serviceInput = sc.nextLine();
 
+        String serviceInput = sc.nextLine().trim();
         String[] services = {"Cleaning", "Filling", "Extraction", "Root Canal", "Orthodontic Treatment", "Whitening"};
         StringBuilder serviceChoice = new StringBuilder();
 
         String[] serviceNumbers = serviceInput.split(",");
         for (String num : serviceNumbers) {
-            int serviceIndex = Integer.parseInt(num.trim()) - 1;
-            if (serviceIndex >= 0 && serviceIndex < services.length) {
-                if (serviceChoice.length() > 0) {
-                    serviceChoice.append(", ");
+            num = num.trim(); // Remove leading/trailing spaces
+            if (!num.isEmpty()) { // Ignore empty strings
+                try {
+                    int serviceIndex = Integer.parseInt(num) - 1; // Convert to zero-based index
+                    if (serviceIndex >= 0 && serviceIndex < services.length) {
+                        if (serviceChoice.length() > 0) {
+                            serviceChoice.append(", ");
+                        }
+                        serviceChoice.append(services[serviceIndex]);
+                    } else {
+                        System.out.println("Invalid service option: " + num);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input: " + num + ". Please enter valid service numbers.");
                 }
-                serviceChoice.append(services[serviceIndex]);
-            } else {
-                System.out.println("Invalid service option: " + num);
             }
+        }
+
+        if (serviceChoice.length() == 0) {
+            System.out.println("No valid services selected.");
+        } else {
+            System.out.println("Selected Services: " + serviceChoice.toString());
         }
 
         String status = "Pending";
@@ -262,46 +311,6 @@ public class Appointment {
         }
     }
 
-    public boolean isValidDate(String date) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date appointmentDate = (Date) sdf.parse(date);  
-
-            Date currentDate = new Date();
-
-            if (appointmentDate.before(currentDate)) {
-                return false;
-            }
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(appointmentDate);
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-            return dayOfWeek != Calendar.SUNDAY;
-        } catch (Exception e) {
-            return false;  
-        }
-    }
-
-    private boolean isValidTime(String time) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-            sdf.setLenient(false);
-
-            Date appointmentTime = sdf.parse(time);
-           
-            Date startTime = sdf.parse("09:00 AM");
-            Date endTime = sdf.parse("05:00 PM");
-
-            
-            return !appointmentTime.before(startTime) && !appointmentTime.after(endTime);
-        } catch (ParseException e) {
-            return false;
-        }
-    }
-
-
-
     public void viewAppointment() {
         String rodequery = "SELECT a.appID, a.doctorID, p.pFNAME, p.pLNAME, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
                        "FROM tbl_appointments a " +
@@ -316,15 +325,15 @@ public class Appointment {
     public void updateStatus() {
         Scanner sc = new Scanner(System.in);
 
-        viewAppointment(); 
+        viewAppointment();
         String appID = "";
         int attempts = 0;
 
         while (attempts < 3) {
             System.out.print("Enter Appointment ID to update status: ");
-            appID = sc.next();
+            appID = sc.next().trim(); 
             if (conf.appIDExists(appID)) {
-                break; 
+                break;
             } else {
                 attempts++;
                 System.out.println("Invalid Appointment ID. Please try again.");
@@ -345,7 +354,13 @@ public class Appointment {
 
         displayStatusOptions();
         System.out.print("Select new Status (Enter number): ");
-        int statusOption = sc.nextInt();
+        int statusOption;
+        try {
+            statusOption = sc.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Returning...");
+            return;
+        }
 
         String[] statuses = {"Complete", "Cancelled"};
         if (statusOption < 1 || statusOption > statuses.length) {
@@ -359,8 +374,6 @@ public class Appointment {
 
         System.out.println("Appointment status updated to: " + newStatus);
     }
-
-
 
     public void updateAppointment() {
         Scanner sc = new Scanner(System.in);
@@ -470,6 +483,29 @@ public class Appointment {
     public void deleteAppointment() {
         Scanner sc = new Scanner(System.in);
 
+        System.out.print("\n");
+        System.out.println("=========================================");
+        System.out.println("       STAFF AUTHENTICATION ACCESS       ");
+        System.out.println("=========================================");
+        System.out.print("\n\tStaff's Username: ");
+        String username = sc.nextLine();
+        System.out.print("\tStaff's Password: ");
+        String password = sc.nextLine();
+
+        String hashedPassword = hashPassword(password);
+
+        String staffID = "";
+        if (!conf.authenticateStaff(username, hashedPassword)) {
+            System.out.println("\nAuthentication failed. Access denied.");
+            return;
+        } else {
+            staffID = conf.getStaffID(username); 
+            if (staffID == null || staffID.isEmpty()) {
+                System.out.println("\nStaff ID not found for the authenticated username.");
+                return;
+            }
+        }
+        
         viewAppointment(); 
         String appID = "";
         int attempts = 0;
@@ -478,7 +514,7 @@ public class Appointment {
             System.out.print("Enter Appointment ID to delete: ");
             appID = sc.next();
             if (conf.appIDExists(appID)) {
-                break; // Valid ID found
+                break; 
             } else {
                 attempts++;
                 System.out.println("Invalid Appointment ID. Please try again.");

@@ -48,8 +48,15 @@ public class IT2CLAROSADCAS {
                 AppReport.viewRecords();
             break;
             case 6: 
-                System.out.println("\nThank You for using Dental Clinic Appointment System!");
-                System.exit(0);
+            System.out.print("\nAre you sure you want to exit? (yes/no): ");
+            String confirmation = sc.nextLine().trim().toLowerCase();
+
+            if (confirmation.equals("yes")) {
+                System.out.println("\nThank You for using the Dental Clinic Appointment System!");
+                System.exit(0);  
+            } else {
+                System.out.println("\nReturning to the main menu...");
+            }
             break;
         }
         

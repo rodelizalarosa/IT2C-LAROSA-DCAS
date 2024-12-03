@@ -118,8 +118,8 @@ public class AppReport {
     private void viewPatient() {
                 
         String rodeQuery = "SELECT * FROM tbl_patients";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Age", "Gender", "Contact Number", "Email", "Address"};
-        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pAGE", "pGENDER", "pCONTNUM", "pEMAIL", "pADDRESS"};
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Contact Number", "Gender", "Date of Birth", "Email", "Address"};
+        String[] rodeColumns = {"pID", "pFNAME", "pLNAME", "pCONTNUM", "pGENDER", "pDOB", "pEMAIL", "pADDRESS"};
 
         vcnf.viewPatient(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -127,8 +127,8 @@ public class AppReport {
     private void viewDoctors() {
         
         String rodeQuery = "SELECT * FROM tbl_doctors";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number", "Availability Start", "Availability End"};
-        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTNUM", "dAVAILABILITY_START", "dAVAILABILITY_END"};
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Specialization", "Contact Number"};
+        String[] rodeColumns = {"dID", "dFNAME", "dLNAME", "dSPECIALIZATION", "dCONTNUM"};
         
         vcnf.viewDoctor(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -136,8 +136,8 @@ public class AppReport {
     private void viewStaff() { 
         
         String rodeQuery = "SELECT * FROM tbl_staff";
-        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role", "Contact Number"};
-        String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTNUM"};
+        String[] rodeHeaders = {"ID", "First Name", "Last Name", "Role", "Contact Number", "Username"};
+        String[] rodeColumns = {"sID", "sFNAME", "sLNAME", "sROLE", "sCONTNUM", "sUSERNAME"};
         
         vcnf.viewStaff(rodeQuery, rodeHeaders, rodeColumns);
     }
@@ -193,23 +193,29 @@ public class AppReport {
     
     private void viewAssociatedAppointments(String id, String type) {
         String query = "";
-        String[] rodeheaders = {"Appointment ID", "Patient ID", "Doctor ID", "Staff ID", "Date", "Time", "Service", "Status"};
-        String[] rodecolumns = {"appID", "patientID", "doctorID", "staffID", "appDATE", "appTIME", "appService", "status"};
+        String[] rodeheaders = {"Appointment ID", "Patient ID", "First Name", "Last Name", "Doctor ID", "Staff ID", "Date", "Time", "Service", "Status"};
+        String[] rodecolumns = {"appID", "patientID", "pFNAME", "pLNAME", "doctorID", "staffID", "appDATE", "appTIME", "appService", "status"};
 
-        switch (type) {
+        switch (type.toLowerCase()) {
             case "doctor":
-                query = "SELECT * FROM tbl_appointments WHERE doctorID = " + id;
+                query = "SELECT a.appID, a.patientID, p.pFNAME, p.pLNAME, a.doctorID, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
+                        "FROM tbl_appointments a " +
+                        "JOIN tbl_patients p ON a.patientID = p.pID " +
+                        "WHERE a.doctorID = ?";
                 break;
             case "staff":
-                query = "SELECT * FROM tbl_appointments WHERE staffID = " + id;
+                query = "SELECT a.appID, a.patientID, p.pFNAME, p.pLNAME, a.doctorID, a.staffID, a.appDATE, a.appTIME, a.appService, a.status " +
+                        "FROM tbl_appointments a " +
+                        "JOIN tbl_patients p ON a.patientID = p.pID " +
+                        "WHERE a.staffID = ?";
                 break;
             default:
-                System.out.println("Invalid type for viewing appointments.");
+                System.out.println("Invalid type. Please specify 'doctor' or 'staff'.");
                 return;
         }
 
         System.out.println("\nAssociated Appointments:");
-        vcnf.viewAppointment(query, rodeheaders, rodecolumns);
+        vcnf.viewAssociatedAppointment(query, rodeheaders, rodecolumns, id);
     }
 
     public void patientRecord() {
@@ -470,9 +476,9 @@ public class AppReport {
                 System.out.println("    Patient ID: " + rs.getInt("pID"));
                 System.out.println("       First Name: " + rs.getString("pFNAME"));
                 System.out.println("       Last Name: " + rs.getString("pLNAME"));
-                System.out.println("       Age: " + rs.getInt("pAGE"));
-                System.out.println("       Gender: " + rs.getString("pGENDER"));
                 System.out.println("       Contact Number: " + rs.getString("pCONTNUM"));
+                System.out.println("       Gender: " + rs.getString("pGENDER"));
+                System.out.println("       Date of Birth: " + rs.getString("pDOB"));
                 System.out.println("       Email: " + rs.getString("pEMAIL"));
                 System.out.println("       Address: " + rs.getString("pADDRESS"));
                 System.out.println("==============================================");
@@ -490,13 +496,12 @@ public class AppReport {
     
     public void viewPatientAppointments(String patientID) {
         try (Connection conn = this.connectDB()) {
-            // Query to get the patient's basic details
+
             String patientInfoQuery = "SELECT pFNAME, pLNAME FROM tbl_patients WHERE pID = ?";
             try (PreparedStatement pstmtPatient = conn.prepareStatement(patientInfoQuery)) {
                 pstmtPatient.setString(1, patientID);
                 ResultSet patientRs = pstmtPatient.executeQuery();
 
-                // Check if the patient exists
                 if (!patientRs.next()) {
                     System.out.println("\n* Patient ID not found in the database. *");
                     return;
@@ -576,9 +581,7 @@ public class AppReport {
                 System.out.println("       First Name: " + rs.getString("dFNAME"));
                 System.out.println("       Last Name: " + rs.getString("dLNAME"));
                 System.out.println("       Specialization: " + rs.getString("dSPECIALIZATION"));
-                System.out.println("       Contact Number: " + rs.getString("dCONTNUM"));
-                System.out.println("       Availability Start: " + rs.getString("dAVAILABILITY_START"));
-                System.out.println("       Availability End: " + rs.getString("dAVAILABILITY_END"));
+                System.out.println("       Contact Number: " + rs.getString("dCONTNUM"));             
                 System.out.println("==============================================");
             } else {
                 System.out.println("No doctor found with ID: " + doctorID);
@@ -602,7 +605,7 @@ public class AppReport {
 
     
     private void viewSpecificStaff(String staffID) {
-        String query = "SELECT * FROM tbl_staff WHERE sID = " + staffID;
+        String query = "SELECT sID, sFNAME, sLNAME, sROLE, sCONTNUM, sUSERNAME FROM tbl_staff WHERE sID = " + staffID;
 
         try {
             ResultSet rs = vcnf.executeQuery(query);
@@ -617,6 +620,7 @@ public class AppReport {
                 System.out.println("       Last Name: " + rs.getString("sLNAME"));
                 System.out.println("       Role: " + rs.getString("sROLE"));
                 System.out.println("       Contact Number: " + rs.getString("sCONTNUM"));
+                System.out.println("       Username: " + rs.getString("sUSERNAME"));
                 System.out.println("==============================================");
             } else {
                 System.out.println("No staff member found with ID: " + staffID);
